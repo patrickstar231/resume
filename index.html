@@ -4,7 +4,15 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/png" href="/logo.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Patrick Pan | Scalable lnnovator Portfolio</title>
+    <!--page-head-->
+    <script>
+      try {
+        var theme = localStorage.getItem('patrick-theme');
+        var motion = localStorage.getItem('patrick-motion');
+        if (['light', 'dark', 'system'].includes(theme)) document.documentElement.dataset.theme = theme;
+        if (motion === 'reduce') document.documentElement.dataset.motion = 'reduce';
+      } catch (_) {}
+    </script>
   </head>
   <body>
     <div id="root"></div>
