@@ -18,6 +18,45 @@ export const methods = [
   { title: { en: 'Carry the learning forward.', zh: '把经验留下来。' }, text: { en: 'Use checklists, operating guides and project reviews to make the next delivery better informed.', zh: '用执行清单、操作手册和复盘，把一次项目的经验带到下一次。' } },
 ];
 
+export const independentProjects = [
+  {
+    id: 'cantonese', href: 'https://hk.datatrade.top/', featured: true,
+    label: { en: 'Learning product', zh: '学习产品' },
+    title: { en: 'Hong Kong Cantonese learning', zh: '香港粤语学习项目' },
+    description: {
+      en: 'A practical Cantonese learning project built around language used in everyday Hong Kong. I shape the learning structure, content and digital experience.',
+      zh: '围绕香港日常真实语境搭建的粤语学习项目，由我持续整理学习结构、内容与数字体验。',
+    },
+  },
+  {
+    id: 'xiaohongshu', href: 'https://xhslink.com/m/5DkJLXbYHA4',
+    label: { en: 'Lifestyle publishing', zh: '生活内容创作' },
+    title: { en: 'Patrick in Hong Kong · Xiaohongshu', zh: 'Patrick在香港 · 小红书' },
+    description: {
+      en: 'Visual stories about work, daily life and useful discoveries in Hong Kong, developed from topic research through writing and art direction.',
+      zh: '记录香港工作、生活与实用发现，从选题研究、文字表达，到视觉策划与发布持续迭代。',
+    },
+  },
+  {
+    id: 'csdn', href: 'https://blog.csdn.net/patrickstar231',
+    label: { en: 'Technical writing', zh: '技术写作' },
+    title: { en: 'Hong Kong data engineering · CSDN', zh: '香港数据工程 · CSDN' },
+    description: {
+      en: 'Reproducible notes on Python, AI engineering and Hong Kong public data, with emphasis on source semantics, validation and failure cases.',
+      zh: '以 Python、AI 工程和香港公开数据为主线，重视来源语义、数据校验与失败案例的可复现技术写作。',
+    },
+  },
+  {
+    id: 'zhihu', href: 'https://www.zhihu.com/people/patrick-pan-7',
+    label: { en: 'Analysis & commentary', zh: '分析与观点' },
+    title: { en: 'Patrick in Hong Kong · Zhihu', zh: 'Patrick在香港 · 知乎' },
+    description: {
+      en: 'Evidence-led answers about finance, careers and life choices between Hong Kong and mainland China, written to clarify the mechanism behind a headline.',
+      zh: '围绕财经、职场与两地生活选择，用数据纠错和机制对比，把热门话题背后的信息差讲清楚。',
+    },
+  },
+];
+
 export const experiences = [
   { id: 'vhall', start: '2022-09', end: '2025-09', company: { en: 'Vhall', zh: '微吼直播' }, role: { en: 'Livestream Project Manager', zh: '直播全案项目经理' }, description: { en: 'Enterprise livestream delivery, technical content and coordination across platforms.', zh: '统筹企业直播项目，协调技术内容、直播执行与多平台协作。' } },
   { id: 'caishi', start: '2020-09', end: '2022-03', company: { en: '财视中国', zh: '财视中国' }, role: { en: 'Sales Director', zh: '销售总监' }, description: { en: 'Conferences, content and client services for the financial industry.', zh: '围绕金融行业客户，组织会议、内容与客户服务。' } },

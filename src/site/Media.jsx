@@ -3,14 +3,22 @@ import { useEffect, useRef, useState } from 'react';
 import { usePreferences } from './Preferences.jsx';
 import { ui } from '../content/ui.js';
 
+const mediaConfig = {
+  desk: { widths: [640, 960, 1440], ratio: [4, 5], sizes: '(max-width: 767px) calc(100vw - 40px), 50vw' },
+  camping: { widths: [640, 960, 1440], ratio: [4, 3], sizes: '(max-width: 767px) calc(100vw - 40px), 58vw' },
+  snow: { widths: [480, 640, 768], ratio: [3, 4], sizes: '(max-width: 767px) 80vw, 28vw' },
+  'work-planning': { widths: [640, 960, 1440], ratio: [3, 2], sizes: '(max-width: 767px) calc(100vw - 40px), 62vw' },
+  'work-onsite': { widths: [640, 960, 1440], ratio: [3, 2], sizes: '(max-width: 767px) calc(100vw - 40px), 45vw' },
+  'work-review': { widths: [640, 960, 1440], ratio: [3, 2], sizes: '(max-width: 767px) calc(100vw - 40px), 45vw' },
+};
+
 export function Photo({ name, locale, alt, className = '', motionKind, priority = false }) {
   const [failed, setFailed] = useState(false);
   const frame = useRef(null), inner = useRef(null);
   const { motion, ready } = usePreferences();
-  const widths = name === 'snow' ? [480, 640, 768] : [640, 960, 1440];
+  const config = mediaConfig[name] || mediaConfig.camping;
+  const { widths, ratio, sizes } = config;
   const sourceSet = (base, extension) => widths.map(width => `/images/${base}-${width}.${extension} ${width}w`).join(', ');
-  const ratio = name === 'desk' ? [4, 5] : name === 'snow' ? [3, 4] : [4, 3];
-  const sizes = name === 'snow' ? '(max-width: 767px) 80vw, 28vw' : '(max-width: 767px) calc(100vw - 40px), 50vw';
 
   useEffect(() => {
     // An eager image can fail before React attaches its error handler.

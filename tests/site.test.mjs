@@ -26,10 +26,19 @@ test('language switches preserve the page and existing anchors remain readable w
   for (const route of routes) assert.equal(translatedPath(resolveRoute(translatedPath(route))), route.path);
   for (const locale of ['/', '/zh/']) {
     const html = await readFile(join('dist', locale, 'index.html'), 'utf8');
-    for (const id of ['about','work','contact','projects','life']) assert.ok(html.includes(`id="${id}"`));
+    for (const id of ['about','independent','work','contact','projects','life']) assert.ok(html.includes(`id="${id}"`));
     assert.ok(html.includes('<details class="earlier-experience">'));
     assert.ok(html.includes('2012.01'));
+    for (const href of ['https://hk.datatrade.top/','https://xhslink.com/m/5DkJLXbYHA4','https://blog.csdn.net/patrickstar231','https://www.zhihu.com/people/patrick-pan-7']) assert.ok(html.includes(`href="${href}"`));
     assert.ok(!html.includes('opacity:0'));
+  }
+});
+
+test('generated work photography has responsive modern and fallback formats', async () => {
+  for (const name of ['work-planning','work-onsite','work-review']) {
+    for (const width of [640,960,1440]) {
+      for (const extension of ['webp','jpg']) await readFile(join('public','images',`${name}-${width}.${extension}`));
+    }
   }
 });
 

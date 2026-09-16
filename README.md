@@ -7,6 +7,8 @@
 - 页面截图：[桌面](docs/previews/desktop.webp) / [手机](docs/previews/mobile.webp)
 - React 18、Vite 4、Tailwind CSS 3，GSAP 仅作为桌面端可选视差模块。
 - 中英文首页、三个项目详情与打印简历，共 10 个独立静态页面，另含真实 404 页面。
+- 首页新增个人项目区：香港粤语学习、小红书、CSDN 与知乎；外部链接均保留平台原始入口。
+- 三张基于本人照片生成并人工检查的工作场景照，覆盖规划、现场协调与复盘；桌面端使用分层视差，减少动态效果时保持静止。
 - 支持系统 / 浅色 / 深色主题、系统 / 减少动态效果；禁用 JavaScript 时正文、导航、经历展开与邮箱仍可用。
 
 ## 本地运行
@@ -46,7 +48,7 @@ npm run test:browser
 | 路由、标题、语言对应关系 | `src/content/routes.js` |
 | 首页与详情布局 | `src/site/`、`src/App.jsx` |
 | 颜色、排版、移动端、打印样式 | `src/index.css` |
-| 视差范围与启用条件 | `src/site/parallax.js` |
+| 图片视差、页面分层视差与启用条件 | `src/site/parallax.js` |
 | 静态 HTML、SEO、站点地图 | `scripts/prerender.mjs` |
 
 英文根路径为 `/`，中文为 `/zh/`；案例为 `/projects/porsche-992/`、`/projects/huawei-b2b-live/`、`/projects/tencent-ecosystem/`，中文案例加 `/zh` 前缀。简历为 `/resume/` 与 `/zh/resume/`。原有 `#about`、`#work`、`#contact` 锚点保留，新增 `#projects` 与 `#life`。
@@ -55,7 +57,7 @@ npm run test:browser
 
 ## 照片
 
-仓库仅包含经过裁切、压缩和去除元数据的公开照片衍生版本。原始照片保留在本人手中，不需部署。
+仓库仅包含经过裁切、压缩和去除元数据的公开照片衍生版本。原始照片保留在本人手中，不需部署。`work-planning`、`work-onsite` 与 `work-review` 为以本人照片作身份参考生成的工作场景图，网站文案不将场景描述为某一场真实客户活动。
 
 重新导出时，将 `IMG_7721.jpeg`（桌前工作）、`IMG_4537.JPG`（露营）、`IMG_2216.JPG`（雪地）放到一个本地目录：
 

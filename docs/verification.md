@@ -1,5 +1,11 @@
 # 改版验证记录
 
+## 2026-09-16 增量验证
+
+本次在 `feat/behind-the-work-portfolio` 增加个人项目、三张生成式工作场景照和页面级视差。`npm run verify` 已通过：生产构建成功，10 个内容页面、404、站点地图及 robots.txt 正常；7 项 Node 测试全部通过，覆盖新增外部项目入口与 18 个响应式工作照文件。首路由 JavaScript 为 71.15 KiB gzip，视差模块为 45.93 KiB gzip，仍低于项目设置的 180 KiB 首路由预算。
+
+本次环境无法重新执行 Playwright：标准 Chromium 下载源连续超时后被网络白名单以 403 拒绝，系统中也没有可复用的 Chromium。下方 2026-09-14 浏览器记录属于改动前基线，不能替代本次增量的浏览器复核。合并或发布前应在 GitHub Actions / 本机运行 `npx playwright install chromium && npm run test:browser`，重点检查 320 / 390 / 768px 横向溢出、四项桌面导航宽度，以及开启 / 关闭减少动态效果后的 transform 清理。
+
 验证日期：2026-09-14。对应「幕后与现场」首版实现，基线为 `214e29b5ad64a58d86aaeb406104322ffb89d92d`。
 
 ## 已执行

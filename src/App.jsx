@@ -1,15 +1,28 @@
+import { useEffect, useRef } from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import { ArrowLeft, Printer } from '@phosphor-icons/react';
 import { routes, resolveRoute, homePath, projectPath, resumePath } from './content/routes.js';
 import { profile, experiences, education, qualifications, languages, period } from './content/profile.js';
 import { projects } from './content/projects.js';
 import { ui } from './content/ui.js';
-import { PreferencesProvider } from './site/Preferences.jsx';
+import { PreferencesProvider, usePreferences } from './site/Preferences.jsx';
 import { Header } from './site/Header.jsx';
-import { Hero, SelectedProjects, About, Experience, Life, Contact, Footer, ActionLink } from './site/Sections.jsx';
+import { Hero, SelectedProjects, About, IndependentWork, BehindWork, Experience, Life, Contact, Footer, ActionLink } from './site/Sections.jsx';
 
 function Home({ locale }) {
-  return <main id="main" tabIndex={-1}><Hero locale={locale} /><SelectedProjects locale={locale} /><About locale={locale} /><Experience locale={locale} /><Life locale={locale} /><Contact locale={locale} /></main>;
+  const root = useRef(null);
+  const { motion, ready } = usePreferences();
+  useEffect(() => {
+    if (!ready || motion === 'reduce') return;
+    let disposed = false, instance;
+    import('./site/parallax.js').then(({ attachPageParallax }) => {
+      if (disposed || !root.current) return;
+      instance = attachPageParallax(root.current);
+      document.fonts?.ready.then(() => { if (!disposed) instance.refresh(); });
+    }).catch(() => {});
+    return () => { disposed = true; instance?.media.revert(); };
+  }, [motion, ready, locale]);
+  return <main id="main" ref={root} tabIndex={-1}><Hero locale={locale} /><SelectedProjects locale={locale} /><About locale={locale} /><IndependentWork locale={locale} /><BehindWork locale={locale} /><Experience locale={locale} /><Life locale={locale} /><Contact locale={locale} /></main>;
 }
 
 function Project({ route }) {

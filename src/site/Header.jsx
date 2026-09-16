@@ -38,7 +38,7 @@ export function Header({ route }) {
   }, [route.kind]);
 
   const openDialog = (event, type) => { trigger.current = event.currentTarget; setOpen(type); };
-  const links = ['about', 'work', 'contact'].map(id => <a key={id} href={`${home}#${id}`} aria-current={active === id ? 'location' : undefined} onClick={close}>{t[id]}</a>);
+  const links = ['about', 'independent', 'work', 'contact'].map(id => <a key={id} href={`${home}#${id}`} aria-current={active === id ? 'location' : undefined} onClick={close}>{t[id]}</a>);
   const languageClick = (event) => { if (route.kind === 'home' && window.location.hash) event.currentTarget.href = translatedPath(route) + window.location.hash; };
 
   return <>

@@ -42,6 +42,8 @@ html[lang='zh-Hans'] h2, html[lang='zh-Hans'] h3 { letter-spacing:-.025em; }
 .section { margin-top:128px; }
 .section > h2 { margin-bottom:48px; }
 .section-intro { max-width:60ch; margin-top:-24px; margin-bottom:48px; color:var(--muted); }
+.section-heading-row { display:grid; grid-template-columns:5fr 7fr; gap:48px; align-items:end; margin-bottom:48px; padding-bottom:22px; border-bottom:1px solid var(--line); }
+.section-heading-row > p { max-width:52ch; color:var(--muted); justify-self:end; }
 .js-only { display:none !important; }
 html[data-enhanced='true'] .js-only { display:inline-flex !important; }
 .skip-link { position:fixed; z-index:60; left:20px; top:12px; padding:12px 20px; background:var(--accent); color:var(--on-accent); transform:translateY(-160%); }
@@ -113,6 +115,24 @@ button.text-link { border:0; padding:0; background:transparent; color:inherit; }
 .method-1 { grid-column:1/6; }
 .method-2 { grid-column:8/13; padding-top:68px; border:0; }
 .method-3 { grid-column:3/8; padding-top:8px; border:0; }
+.independent-grid { display:grid; grid-template-columns:repeat(12,1fr); gap:20px; }
+.independent-card { position:relative; min-height:320px; grid-column:span 6; display:flex; flex-direction:column; padding:34px; border:1px solid var(--line); background:var(--bg); transition:border-color .2s ease, background-color .2s ease; }
+.independent-card:hover { border-color:var(--accent); background:var(--surface); }
+.independent-card .project-number { position:absolute; right:30px; top:27px; color:var(--muted); font-size:12px; font-variant-numeric:tabular-nums; }
+.independent-card .project-category { padding-right:42px; }
+.independent-card h3 { max-width:18ch; margin-top:18px; font-size:clamp(25px,3vw,38px); line-height:1.17; }
+.independent-card > p:not(.project-category) { max-width:50ch; margin-top:20px; color:var(--muted); font-size:15px; }
+.independent-card .text-link { margin-top:auto; padding-top:36px; }
+.independent-feature { grid-column:span 12; min-height:400px; padding:48px; color:var(--on-accent); background:var(--accent); border-color:var(--accent); }
+.independent-feature:hover { color:var(--on-accent); background:var(--accent); }
+.independent-feature h3 { max-width:20ch; font-size:clamp(38px,5.5vw,68px); }
+.independent-feature .project-category, .independent-feature > p:not(.project-category), .independent-feature .project-number { color:var(--on-accent); opacity:.78; }
+.behind-gallery { display:grid; grid-template-columns:repeat(12,1fr); row-gap:72px; }
+.behind-figure-1 { grid-column:1/10; }
+.behind-figure-2 { grid-column:6/13; }
+.behind-figure-3 { grid-column:2/9; }
+.behind-gallery figcaption { display:grid; grid-template-columns:42px 1fr; gap:12px; max-width:58ch; padding-top:16px; color:var(--muted); font-size:13px; }
+.behind-gallery figcaption span { color:var(--accent); font-variant-numeric:tabular-nums; }
 .experience-list { list-style:none; margin:0; padding:0; }
 .experience-item { display:grid; grid-template-columns:2fr 4fr 6fr; column-gap:24px; align-items:start; padding:30px 0; border-top:1px solid var(--line); }
 .experience-date { font-size:13px; line-height:1.7; font-variant-numeric:tabular-nums; color:var(--muted); }
@@ -187,11 +207,13 @@ dialog::backdrop { background:rgb(10 12 15 / .6); }
 .not-found > p:not(.error-code) { margin-top:28px; max-width:55ch; color:var(--muted); }
 
 @media (min-width:1024px) and (pointer:fine) and (prefers-reduced-motion:no-preference) {
-  html:not([data-motion='reduce']) .photo[data-motion-kind] .photo-inner { top:-52px; bottom:-52px; }
+  html:not([data-motion='reduce']) .photo[data-motion-kind] .photo-inner { top:-76px; bottom:-76px; }
+  html:not([data-motion='reduce']) [data-parallax] { will-change:transform; }
 }
 @media (max-width:1100px) {
   .header-inner { gap:24px; }
-  .desktop-nav { gap:24px; }
+  .desktop-nav { gap:18px; }
+  .desktop-nav a { font-size:13px; }
   .hero { grid-template-columns:5fr .5fr 5fr; }
   .hero h1 { font-size:84px; }
   .hero-role { font-size:13px; max-width:270px; }
@@ -227,6 +249,9 @@ dialog::backdrop { background:rgb(10 12 15 / .6); }
   .container { width:calc(100% - 40px); }
   .section { margin-top:68px; }
   .section > h2 { margin-bottom:30px; font-size:34px; }
+  .section-heading-row { display:block; margin-bottom:30px; padding-bottom:18px; }
+  .section-heading-row h2 { font-size:34px; }
+  .section-heading-row > p { margin-top:14px; font-size:15px; }
   .header-inner { gap:16px; }
   .wordmark { font-size:19px; letter-spacing:-.8px; }
   .header-controls { gap:2px; }
@@ -263,6 +288,15 @@ dialog::backdrop { background:rgb(10 12 15 / .6); }
   .method { padding:0; border:0; }
   .method h3 { font-size:22px; margin-bottom:10px; }
   .method p { font-size:16px; }
+  .independent-grid { display:flex; flex-direction:column; gap:14px; }
+  .independent-card, .independent-feature { min-height:0; padding:25px 22px; }
+  .independent-card h3, .independent-feature h3 { max-width:18ch; margin-top:12px; font-size:27px; }
+  .independent-card > p:not(.project-category) { margin-top:16px; font-size:15px; }
+  .independent-card .text-link { padding-top:28px; }
+  .independent-card .project-number { right:22px; top:21px; }
+  .behind-gallery { display:flex; flex-direction:column; gap:34px; }
+  .behind-figure { width:100%; }
+  .behind-gallery figcaption { padding-top:12px; }
   .experience-item, .resume-section .experience-item { display:block; padding-block:24px; }
   .experience-date { font-size:13px; margin-bottom:10px; }
   .experience-position h3 { font-size:21px; margin-bottom:6px; }
@@ -323,6 +357,7 @@ html[data-motion='reduce'] *, html[data-motion='reduce'] *::before, html[data-mo
   :root, :root[data-theme], :root:not([data-theme='light']) { --bg:#fff; --surface:#fff; --text:#191B1F; --muted:#36383E; --accent:#191B1F; --line:#C8CBD0; color-scheme:light; }
   body { font-size:9pt; line-height:1.45; background:white; }
   .site-header, .site-footer, .resume-toolbar, .skip-link, dialog { display:none !important; }
+  [data-parallax], .photo-inner { transform:none !important; }
   .container { width:100%; max-width:none; }
   .resume-page { padding:0; }
   .resume-heading h1 { font-size:26pt; }
