@@ -7,22 +7,30 @@ import { projects } from './content/projects.js';
 import { ui } from './content/ui.js';
 import { PreferencesProvider, usePreferences } from './site/Preferences.jsx';
 import { Header } from './site/Header.jsx';
+import { Timecode } from './site/Timecode.jsx';
 import { Hero, SelectedProjects, About, IndependentWork, BehindWork, Experience, Life, Contact, Footer, ActionLink } from './site/Sections.jsx';
 
 function Home({ locale }) {
-  const root = useRef(null);
+  const root = useRef(null), clock = useRef(null);
   const { motion, ready } = usePreferences();
   useEffect(() => {
-    if (!ready || motion === 'reduce') return;
+    // The stage engine is a lazily loaded leaf: the server rendered document is
+    // already a complete, readable page before this module ever arrives.
+    if (!ready || motion === 'reduce' || !root.current) return;
     let disposed = false, instance;
-    import('./site/parallax.js').then(({ attachPageParallax }) => {
+    import('./site/stage.js').then(({ attachStage }) => {
       if (disposed || !root.current) return;
-      instance = attachPageParallax(root.current);
-      document.fonts?.ready.then(() => { if (!disposed) instance.refresh(); });
+      instance = attachStage(root.current, { timecodeTarget: clock.current });
+      // Text and lazy images change block heights, so re-measure once both settle.
+      document.fonts?.ready.then(() => { if (!disposed) instance.remeasure(); });
+      window.addEventListener('load', () => { if (!disposed) instance.remeasure(); }, { once: true });
     }).catch(() => {});
-    return () => { disposed = true; instance?.media.revert(); };
+    return () => { disposed = true; instance?.destroy(); };
   }, [motion, ready, locale]);
-  return <main id="main" ref={root} tabIndex={-1}><Hero locale={locale} /><SelectedProjects locale={locale} /><About locale={locale} /><IndependentWork locale={locale} /><BehindWork locale={locale} /><Experience locale={locale} /><Life locale={locale} /><Contact locale={locale} /></main>;
+  return <main id="main" ref={root} className="stage-root" tabIndex={-1}>
+    <Timecode clockRef={clock} locale={locale} />
+    <Hero locale={locale} /><SelectedProjects locale={locale} /><About locale={locale} /><IndependentWork locale={locale} /><BehindWork locale={locale} /><Experience locale={locale} /><Life locale={locale} /><Contact locale={locale} />
+  </main>;
 }
 
 function Project({ route }) {

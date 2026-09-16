@@ -3,168 +3,294 @@
     "file": "desk-640.webp",
     "width": 640,
     "height": 800,
-    "bytes": 40776,
+    "bytes": 40162,
     "quality": 79
   },
   {
     "file": "desk-640.jpg",
     "width": 640,
     "height": 800,
-    "bytes": 48203,
+    "bytes": 47789,
     "quality": 79
   },
   {
     "file": "desk-960.webp",
     "width": 960,
     "height": 1200,
-    "bytes": 119150,
+    "bytes": 124736,
     "quality": 79
   },
   {
     "file": "desk-960.jpg",
     "width": 960,
     "height": 1200,
-    "bytes": 116764,
+    "bytes": 116934,
     "quality": 79
   },
   {
     "file": "desk-1440.webp",
     "width": 1440,
     "height": 1800,
-    "bytes": 226852,
-    "quality": 74
+    "bytes": 246484,
+    "quality": 64
   },
   {
     "file": "desk-1440.jpg",
     "width": 1440,
     "height": 1800,
-    "bytes": 242928,
+    "bytes": 253440,
     "quality": 74
   },
   {
     "file": "desk-mobile-640.webp",
     "width": 640,
     "height": 427,
-    "bytes": 19706,
+    "bytes": 19032,
     "quality": 79
   },
   {
     "file": "desk-mobile-640.jpg",
     "width": 640,
     "height": 427,
-    "bytes": 26078,
+    "bytes": 25702,
     "quality": 79
   },
   {
     "file": "desk-mobile-960.webp",
     "width": 960,
     "height": 640,
-    "bytes": 57732,
+    "bytes": 58340,
     "quality": 79
   },
   {
     "file": "desk-mobile-960.jpg",
     "width": 960,
     "height": 640,
-    "bytes": 61334,
+    "bytes": 61086,
     "quality": 79
   },
   {
     "file": "desk-mobile-1440.webp",
     "width": 1440,
     "height": 960,
-    "bytes": 155788,
+    "bytes": 176794,
     "quality": 79
   },
   {
     "file": "desk-mobile-1440.jpg",
     "width": 1440,
     "height": 960,
-    "bytes": 150865,
+    "bytes": 153673,
+    "quality": 79
+  },
+  {
+    "file": "work-desk-640.webp",
+    "width": 640,
+    "height": 427,
+    "bytes": 18998,
+    "quality": 79
+  },
+  {
+    "file": "work-desk-640.jpg",
+    "width": 640,
+    "height": 427,
+    "bytes": 26034,
+    "quality": 79
+  },
+  {
+    "file": "work-desk-960.webp",
+    "width": 960,
+    "height": 640,
+    "bytes": 56492,
+    "quality": 79
+  },
+  {
+    "file": "work-desk-960.jpg",
+    "width": 960,
+    "height": 640,
+    "bytes": 61930,
+    "quality": 79
+  },
+  {
+    "file": "work-desk-1440.webp",
+    "width": 1440,
+    "height": 960,
+    "bytes": 179518,
+    "quality": 79
+  },
+  {
+    "file": "work-desk-1440.jpg",
+    "width": 1440,
+    "height": 960,
+    "bytes": 154395,
+    "quality": 79
+  },
+  {
+    "file": "work-crew-640.webp",
+    "width": 640,
+    "height": 427,
+    "bytes": 34508,
+    "quality": 79
+  },
+  {
+    "file": "work-crew-640.jpg",
+    "width": 640,
+    "height": 427,
+    "bytes": 41219,
+    "quality": 79
+  },
+  {
+    "file": "work-crew-960.webp",
+    "width": 960,
+    "height": 640,
+    "bytes": 66702,
+    "quality": 79
+  },
+  {
+    "file": "work-crew-960.jpg",
+    "width": 960,
+    "height": 640,
+    "bytes": 80552,
+    "quality": 79
+  },
+  {
+    "file": "work-crew-1440.webp",
+    "width": 1440,
+    "height": 960,
+    "bytes": 130406,
+    "quality": 79
+  },
+  {
+    "file": "work-crew-1440.jpg",
+    "width": 1440,
+    "height": 960,
+    "bytes": 160289,
+    "quality": 79
+  },
+  {
+    "file": "work-table-640.webp",
+    "width": 640,
+    "height": 427,
+    "bytes": 52194,
+    "quality": 79
+  },
+  {
+    "file": "work-table-640.jpg",
+    "width": 640,
+    "height": 427,
+    "bytes": 53697,
+    "quality": 79
+  },
+  {
+    "file": "work-table-960.webp",
+    "width": 960,
+    "height": 640,
+    "bytes": 104114,
+    "quality": 79
+  },
+  {
+    "file": "work-table-960.jpg",
+    "width": 960,
+    "height": 640,
+    "bytes": 108612,
+    "quality": 79
+  },
+  {
+    "file": "work-table-1440.webp",
+    "width": 1440,
+    "height": 960,
+    "bytes": 204816,
+    "quality": 79
+  },
+  {
+    "file": "work-table-1440.jpg",
+    "width": 1440,
+    "height": 960,
+    "bytes": 220044,
     "quality": 79
   },
   {
     "file": "camping-640.webp",
     "width": 640,
     "height": 480,
-    "bytes": 43206,
+    "bytes": 41492,
     "quality": 79
   },
   {
     "file": "camping-640.jpg",
     "width": 640,
     "height": 480,
-    "bytes": 43666,
+    "bytes": 43157,
     "quality": 79
   },
   {
     "file": "camping-960.webp",
     "width": 960,
     "height": 720,
-    "bytes": 98142,
+    "bytes": 97664,
     "quality": 79
   },
   {
     "file": "camping-960.jpg",
     "width": 960,
     "height": 720,
-    "bytes": 96773,
+    "bytes": 96596,
     "quality": 79
   },
   {
     "file": "camping-1440.webp",
     "width": 1440,
     "height": 1080,
-    "bytes": 159492,
+    "bytes": 166032,
     "quality": 74
   },
   {
     "file": "camping-1440.jpg",
     "width": 1440,
     "height": 1080,
-    "bytes": 184183,
+    "bytes": 187722,
     "quality": 74
   },
   {
     "file": "snow-480.webp",
     "width": 480,
     "height": 640,
-    "bytes": 80950,
+    "bytes": 79984,
     "quality": 79
   },
   {
     "file": "snow-480.jpg",
     "width": 480,
     "height": 640,
-    "bytes": 75956,
+    "bytes": 75212,
     "quality": 79
   },
   {
     "file": "snow-640.webp",
     "width": 640,
     "height": 853,
-    "bytes": 134570,
+    "bytes": 134574,
     "quality": 79
   },
   {
     "file": "snow-640.jpg",
     "width": 640,
     "height": 853,
-    "bytes": 129417,
+    "bytes": 129324,
     "quality": 79
   },
   {
     "file": "snow-768.webp",
     "width": 768,
     "height": 1024,
-    "bytes": 165444,
-    "quality": 74
+    "bytes": 187984,
+    "quality": 79
   },
   {
     "file": "snow-768.jpg",
     "width": 768,
     "height": 1024,
-    "bytes": 180838,
+    "bytes": 182638,
     "quality": 79
   }
 ]

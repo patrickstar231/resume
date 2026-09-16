@@ -4,12 +4,12 @@ import { usePreferences } from './Preferences.jsx';
 import { ui } from '../content/ui.js';
 
 const mediaConfig = {
-  desk: { widths: [640, 960, 1440], ratio: [4, 5], sizes: '(max-width: 767px) calc(100vw - 40px), 50vw' },
-  camping: { widths: [640, 960, 1440], ratio: [4, 3], sizes: '(max-width: 767px) calc(100vw - 40px), 58vw' },
-  snow: { widths: [480, 640, 768], ratio: [3, 4], sizes: '(max-width: 767px) 80vw, 28vw' },
-  'work-planning': { widths: [640, 960, 1440], ratio: [3, 2], sizes: '(max-width: 767px) calc(100vw - 40px), 62vw' },
-  'work-onsite': { widths: [640, 960, 1440], ratio: [3, 2], sizes: '(max-width: 767px) calc(100vw - 40px), 45vw' },
-  'work-review': { widths: [640, 960, 1440], ratio: [3, 2], sizes: '(max-width: 767px) calc(100vw - 40px), 45vw' },
+  desk: { widths: [640, 960, 1440], ratio: [4, 5], sizes: '(max-width: 767px) calc(100vw - 40px), 32vw' },
+  camping: { widths: [640, 960, 1440], ratio: [4, 3], sizes: '(max-width: 767px) calc(100vw - 40px), 55vw' },
+  snow: { widths: [480, 640, 768], ratio: [3, 4], sizes: '(max-width: 767px) 78vw, 32vw' },
+  'work-crew': { widths: [640, 960, 1440], ratio: [3, 2], sizes: '(max-width: 767px) calc(100vw - 40px), 56vw' },
+  'work-desk': { widths: [640, 960, 1440], ratio: [3, 2], sizes: '(max-width: 767px) calc(100vw - 40px), 56vw' },
+  'work-table': { widths: [640, 960, 1440], ratio: [3, 2], sizes: '(max-width: 767px) calc(100vw - 40px), 56vw' },
 };
 
 export function Photo({ name, locale, alt, className = '', motionKind, priority = false }) {

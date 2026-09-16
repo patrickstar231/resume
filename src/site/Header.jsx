@@ -54,6 +54,7 @@ export function Header({ route }) {
           <button className="icon-button mobile-menu-button js-only" aria-label={t.menu} aria-haspopup="dialog" aria-expanded={open === 'menu'} onClick={event => openDialog(event, 'menu')}><List size={25} weight="regular" /></button>
         </div>
       </div>
+      <div className="header-progress" aria-hidden="true" />
     </header>
     <dialog className="menu-dialog" ref={menu} aria-label={t.navigation} onCancel={close} onClose={() => setOpen(null)} onClick={event => { if (event.target === event.currentTarget) close(); }}>
       <div className="dialog-content">

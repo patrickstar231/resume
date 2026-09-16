@@ -23,6 +23,20 @@ test('desktop content hydrates, switches themes, and keeps the first-screen acti
   expect(errors).toEqual([]);
 });
 
+test('the stage engine dollies the camera, advances the timecode and clears the header blackout', async ({ page }) => {
+  await page.goto('/');
+  await expect(page.locator('html')).toHaveAttribute('data-at-top','true');
+  const clock = page.locator('.timecode b');
+  await expect(clock).toHaveText('00:00:00:00');
+  await page.mouse.wheel(0,900);
+  await expect.poll(() => page.locator('html').evaluate(el => Number(el.style.getPropertyValue('--camz')))).toBeGreaterThan(0);
+  await expect.poll(() => page.locator('html').evaluate(el => Number(el.style.getPropertyValue('--hp')))).toBeGreaterThan(0);
+  await expect(clock).not.toHaveText('00:00:00:00');
+  await expect(page.locator('html')).not.toHaveAttribute('data-at-top','true');
+  await expect.poll(() => page.locator('html').evaluate(el => el.style.getPropertyValue('--drift') !== '' || [...document.querySelectorAll('[data-depth]')].some(node => node.style.getPropertyValue('--drift') !== ''))).toBe(true);
+  await expect(page.locator('[data-focus]').first()).toHaveClass(/in-focus/);
+});
+
 test('mobile layouts fit and the menu traps focus and closes with Escape', async ({ page }) => {
   for (const width of [320,390,768]) {
     await page.setViewportSize({ width,height:844 }); await page.goto('/zh/');
@@ -43,22 +57,22 @@ test('mobile layouts fit and the menu traps focus and closes with Escape', async
 
 test('reduced motion and touch keep photos static, desktop parallax moves and cleans up', async ({ page, browser }) => {
   await page.goto('/');
-  await page.waitForFunction(() => document.querySelector('.hero-photo .photo-inner').style.transform);
-  const before=await page.locator('.hero-photo .photo-inner').getAttribute('style');
+  await page.waitForFunction(() => document.querySelector('.hero-portrait .photo-inner').style.transform);
+  const before=await page.locator('.hero-portrait .photo-inner').getAttribute('style');
   await page.mouse.wheel(0,420);
-  await expect.poll(() => page.locator('.hero-photo .photo-inner').getAttribute('style')).not.toBe(before);
+  await expect.poll(() => page.locator('.hero-portrait .photo-inner').getAttribute('style')).not.toBe(before);
   await page.getByRole('button',{ name:'Settings',exact:true }).click();
   await page.getByLabel('Motion',{ exact:true }).selectOption('reduce');
   await page.getByRole('button',{ name:'Close',exact:true }).click();
-  await expect.poll(() => page.locator('.hero-photo .photo-inner').evaluate(el => el.style.transform)).toBe('');
+  await expect.poll(() => page.locator('.hero-portrait .photo-inner').evaluate(el => el.style.transform)).toBe('');
   await page.emulateMedia({ reducedMotion:'reduce' });
   await page.reload();
   await expect(page.locator('html')).toHaveAttribute('data-enhanced','true');
-  expect(await page.locator('.hero-photo .photo-inner').evaluate(el => getComputedStyle(el).transform)).toBe('none');
+  expect(await page.locator('.hero-portrait .photo-inner').evaluate(el => getComputedStyle(el).transform)).toBe('none');
   const touch = await browser.newContext({ hasTouch:true, isMobile:true, viewport:{ width:1024,height:768 } });
   const tablet = await touch.newPage(); await tablet.goto('http://127.0.0.1:4173/');
   await expect(tablet.locator('html')).toHaveAttribute('data-enhanced','true');
-  expect(await tablet.locator('.hero-photo .photo-inner').evaluate(el => getComputedStyle(el).transform)).toBe('none');
+  expect(await tablet.locator('.hero-portrait .photo-inner').evaluate(el => getComputedStyle(el).transform)).toBe('none');
   await touch.close();
 });
 
@@ -105,7 +119,7 @@ test('storage, clipboard and image failures have usable fallbacks', async ({ bro
   const page=await context.newPage();
   await page.route('**/images/desk-*', route => route.abort());
   await page.goto('http://127.0.0.1:4173/');
-  await expect(page.locator('.hero-photo')).toContainText('Photo unavailable.');
+  await expect(page.locator('.hero-portrait')).toContainText('Photo unavailable.');
   await page.getByRole('button',{ name:'Copy email',exact:true }).click();
   await expect(page.getByRole('status')).toContainText('Select the email address');
   await expect(page.locator('a[href="mailto:patrick_pan410@hotmail.com"]')).toBeVisible();

@@ -1,5 +1,25 @@
 # 改版验证记录
 
+## 2026-09-16 3D 视差改版验证（`feat/3d-parallax-stage`）
+
+在 `feat/behind-the-work-portfolio` 基础上重建视觉与动效，方向为 3D Parallax Scrolling。`npm run verify` 通过：生产构建成功，10 个内容页面、404、站点地图与 robots.txt 正常；8 项 Node 测试通过；浏览器套件 7 项通过。
+
+| 检查 | 结果 |
+| --- | --- |
+| 生产构建 | 通过；首路由 JavaScript 72.30 KiB gzip，舞台模块 1.18 KiB gzip，照片视差 45.74 KiB gzip（懒加载），均在 180 KiB 首路由预算内 |
+| `npm test` | 8 项通过，新增「舞台引擎为可选增强」与真实照片资源集断言 |
+| `npm run test:browser` | 7 项通过，新增舞台测试：开场 `data-at-top` 黑场、`--camz` 与 `--hp` 随滚动推进、时间码前进、`--drift` 写入、`[data-focus]` 进入 `in-focus` |
+| 无 JavaScript | 通过；舞台引擎与焦平面状态只在客户端挂载，预渲染 HTML 不含 `focus-ready`，正文与导航完整可读 |
+| 减少动态效果 / 触摸平板 | 通过；摄像机、深度漂移与照片视差的 transform 全部清理 |
+| 320 / 390 / 768px | 通过；`scrollWidth` 不超视口，首屏操作可见 |
+| 明暗主题、中英双语、案例页、简历页、打印 | 桌面 1440 × 900 与手机 390 × 844 逐屏目检；打印样式未受影响 |
+
+本次浏览器套件在以已安装的 Google Chrome 执行的本地配置下运行：本机 Playwright 1.63 无法为 mac13-arm64 下载配套 Chromium（`Playwright does not support chromium on mac13-arm64`）。仓库默认测试配置未改动，仍使用标准 Playwright 安装流程。
+
+已修复的过程问题，供后续参考：`translateZ` 在缺少 `perspective` 祖先的元素上是空操作，区块深度一度完全不可见；Hero 内容在首次滚动后过早淡出，导致黑场出现大片空白；浅色主题下 `.hero h1` 因类名从 `hero` 改为 `stage-hero` 而失效，标题缩回正文尺寸。
+
+尚未执行：Lighthouse 复测、真机浏览器、Vercel 预览域名验收。
+
 ## 2026-09-16 增量验证
 
 本次在 `feat/behind-the-work-portfolio` 增加个人项目、三张生成式工作场景照和页面级视差。`npm run verify` 已通过：生产构建成功，10 个内容页面、404、站点地图及 robots.txt 正常；7 项 Node 测试全部通过，覆盖新增外部项目入口与 18 个响应式工作照文件。首路由 JavaScript 为 71.15 KiB gzip，视差模块为 45.93 KiB gzip，仍低于项目设置的 180 KiB 首路由预算。

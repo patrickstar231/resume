@@ -34,11 +34,24 @@ test('language switches preserve the page and existing anchors remain readable w
   }
 });
 
-test('generated work photography has responsive modern and fallback formats', async () => {
-  for (const name of ['work-planning','work-onsite','work-review']) {
+test('published photography is a real photograph set with modern and fallback formats', async () => {
+  for (const name of ['work-crew','work-desk','work-table']) {
     for (const width of [640,960,1440]) {
       for (const extension of ['webp','jpg']) await readFile(join('public','images',`${name}-${width}.${extension}`));
     }
+  }
+  for (const name of ['desk','camping']) {
+    for (const width of [640,960,1440]) await readFile(join('public','images',`${name}-${width}.webp`));
+  }
+});
+
+test('the stage engine stays optional: no depth markup depends on JavaScript to be readable', async () => {
+  for (const locale of ['/', '/zh/']) {
+    const html = await readFile(join('dist', locale, 'index.html'), 'utf8');
+    assert.ok(!html.includes('focus-ready'), 'focus reveal must be armed on the client only');
+    assert.ok(!html.includes('data-focus="" hidden'), locale);
+    assert.ok(html.includes('class="stage stage-hero"'), locale);
+    assert.ok(html.includes('data-focus'), locale);
   }
 });
 
