@@ -27,3 +27,8 @@ dist-ssr
 
 # vscode
 .vscode
+# Local build and verification outputs
+.ssr/
+.verification/
+*.pem
+vite.config.*.timestamp-*.mjs

@@ -1,11 +1,12 @@
-import React from "react";
-import ReactDOM from "react-dom/client";
+import React from 'react';
+import { createRoot, hydrateRoot } from 'react-dom/client';
+import { BrowserRouter } from 'react-router-dom';
+import '@fontsource-variable/manrope';
+import './index.css';
+import App from './App.jsx';
 
-import App from "./App";
-import "./index.css";
-
-ReactDOM.createRoot(document.getElementById("root")).render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
-);
+const root = document.getElementById('root');
+const year = Number(document.documentElement.dataset.buildYear) || new Date().getFullYear();
+const app = <React.StrictMode><BrowserRouter><App year={year} /></BrowserRouter></React.StrictMode>;
+if (root.hasChildNodes()) hydrateRoot(root, app);
+else createRoot(root).render(app);
