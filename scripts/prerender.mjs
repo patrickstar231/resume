@@ -33,12 +33,12 @@ for (const route of [...routes, resolveRoute('/404.html')]) {
   if (route.kind !== '404') tags.push(
     `<link rel="canonical" href="${meta.canonical}">`,
     `<meta property="og:url" content="${meta.canonical}">`,
-    `<link rel="alternate" hreflang="en" href="${profile.origin}${en}">`,
     `<link rel="alternate" hreflang="zh-Hans" href="${profile.origin}${zh}">`,
-    `<link rel="alternate" hreflang="x-default" href="${profile.origin}${en}">`,
+    `<link rel="alternate" hreflang="en" href="${profile.origin}${en}">`,
+    `<link rel="alternate" hreflang="x-default" href="${profile.origin}${zh}">`,
   );
   if (route.kind === 'home') tags.push(`<script type="application/ld+json">${JSON.stringify(data).replace(/</g, '\\u003c')}</script>`);
-  const page = template.replace(/<html lang="en">/, `<html lang="${meta.language}" data-build-year="${year}">`)
+  const page = template.replace(/<html lang="zh-Hans">/, `<html lang="${meta.language}" data-build-year="${year}">`)
     .replace('<!--page-head-->', tags.join('\n'))
     .replace('<div id="root"></div>', `<div id="root">${render(route.path, year)}</div>`);
   const file = route.kind === '404' ? 'dist/404.html' : join('dist', route.path, 'index.html');

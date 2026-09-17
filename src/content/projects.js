@@ -2,7 +2,9 @@
 // No existing event image has been confirmed for its specific project yet.
 export const projects = [
   {
-    id: 'porsche-992', brand: 'Porsche', display: '992', dates: '2019.09 - 2019.11', employerId: 'fengkeda', media: null,
+    id: 'porsche-992', brand: 'Porsche', display: '992', dates: '2019.09 - 2019.11', employerId: 'fengkeda',
+    site: 'https://newsroom.porsche.com/en.html',
+    media: { imageName:'case-porsche', publicationStatus:'approved', alt: { en:'Porsche 911 on the launch stage at the 992 exhibition.', zh:'保时捷 992 展的 911 车型与现场舞台。' } },
     en: {
       title: 'Porsche 992 launch project', category: 'Brand experience', role: 'Project Manager',
       summary: 'Coordinating budgets, design and on-site execution to bring the exhibition experience and delivery plan together.',
@@ -29,7 +31,9 @@ export const projects = [
     },
   },
   {
-    id: 'huawei-b2b-live', brand: 'Huawei', display: 'B2B live', dates: null, employerId: 'vhall', media: null,
+    id: 'huawei-b2b-live', brand: 'Huawei', display: 'B2B live', dates: null, employerId: 'vhall',
+    site: 'https://activity.huaweicloud.com/kuaichengzhang_live.html',
+    media: { imageName:'case-huawei', publicationStatus:'approved', alt: { en:'Huawei Cloud commerce livestream stage with on-screen titles.', zh:'华为云电商创新峰会的直播舞台与字幕。' } },
     en: {
       title: 'Huawei B2B livestream projects', category: 'Digital marketing', role: 'Livestream Project Manager',
       summary: 'Bringing technical content, livestream production and distribution across platforms into a shared delivery process.',
@@ -56,7 +60,9 @@ export const projects = [
     },
   },
   {
-    id: 'tencent-ecosystem', brand: 'Tencent', display: 'Ecosystem', dates: '2019.05 - 2019.06', employerId: 'cyts-linkage', media: null,
+    id: 'tencent-ecosystem', brand: 'Tencent', display: 'Ecosystem', dates: '2019.05 - 2019.06', employerId: 'cyts-linkage',
+    site: 'https://des.cloud.tencent.com/',
+    media: { imageName:'case-tencent', publicationStatus:'approved', alt: { en:'Tencent Global Digital Ecosystem Summit keynote stage.', zh:'腾讯全球数字生态大会的主舞台。' } },
     en: {
       title: 'Tencent Digital Ecosystem Summit project', category: 'Conference & exhibition', role: 'Project Manager',
       summary: 'Organising product displays, interactive experiences and communications around a technology conference.',

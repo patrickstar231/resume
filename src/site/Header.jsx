@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { List, X, SlidersHorizontal } from '@phosphor-icons/react';
-import { ui } from '../content/ui.js';
+import { ui, navLabel } from '../content/ui.js';
 import { homePath, translatedPath } from '../content/routes.js';
 import { usePreferences } from './Preferences.jsx';
 
@@ -33,24 +33,24 @@ export function Header({ route }) {
       const entry = entries.find(item => item.isIntersecting);
       if (entry) setActive(entry.target.id);
     }, { rootMargin: '-15% 0px -65% 0px' });
-    document.querySelectorAll('main > section[id]').forEach(element => observer.observe(element));
+    document.querySelectorAll('main [data-cue]').forEach(element => observer.observe(element));
     return () => observer.disconnect();
   }, [route.kind]);
 
   const openDialog = (event, type) => { trigger.current = event.currentTarget; setOpen(type); };
-  const links = ['about', 'independent', 'work', 'contact'].map(id => <a key={id} href={`${home}#${id}`} aria-current={active === id ? 'location' : undefined} onClick={close}>{t[id]}</a>);
+  const links = t.nav.map(id => <a key={id} href={`${home}#${id}`} aria-current={active === id ? 'location' : undefined} onClick={close}>{navLabel(route.locale, id)}</a>);
   const languageClick = (event) => { if (route.kind === 'home' && window.location.hash) event.currentTarget.href = translatedPath(route) + window.location.hash; };
 
   return <>
     <a className="skip-link" href="#main">{t.skip}</a>
     <header className="site-header">
       <div className="header-inner container">
-        <a className="wordmark" href={home} aria-label={route.locale === 'zh' ? 'Patrick Pan，首页' : 'Patrick Pan, home'}>Patrick Pan</a>
+        <a className="wordmark" href={home} aria-label={route.locale === 'zh' ? 'Patrick Pan，首页' : 'Patrick Pan, home'}>Patrick Pan<span>{route.locale === 'zh' ? '作品集' : 'Portfolio'}</span></a>
         <nav className="desktop-nav" aria-label={t.navigation}>{links}</nav>
         <div className="header-controls">
           <a className="language-link" href={translatedPath(route)} hrefLang={route.locale === 'en' ? 'zh-Hans' : 'en'} lang={route.locale === 'en' ? 'zh-Hans' : 'en'} onClick={languageClick}>{route.locale === 'en' ? '简体中文' : 'English'}</a>
           <button className="icon-button settings-toggle js-only" aria-label={t.settings} aria-haspopup="dialog" aria-expanded={open === 'settings'} onClick={event => openDialog(event, 'settings')}><SlidersHorizontal size={22} weight="regular" /></button>
-          <details className="fallback-menu"><summary className="icon-button" aria-label={t.menu}><List size={25} /></summary><nav aria-label={t.navigation}>{links}<a href={`${home}#projects`}>{t.viewProjects}</a></nav></details>
+          <details className="fallback-menu"><summary className="icon-button" aria-label={t.menu}><List size={25} /></summary><nav aria-label={t.navigation}>{links}</nav></details>
           <button className="icon-button mobile-menu-button js-only" aria-label={t.menu} aria-haspopup="dialog" aria-expanded={open === 'menu'} onClick={event => openDialog(event, 'menu')}><List size={25} weight="regular" /></button>
         </div>
       </div>
@@ -59,7 +59,7 @@ export function Header({ route }) {
     <dialog className="menu-dialog" ref={menu} aria-label={t.navigation} onCancel={close} onClose={() => setOpen(null)} onClick={event => { if (event.target === event.currentTarget) close(); }}>
       <div className="dialog-content">
         <div className="dialog-heading"><span>{t.menu}</span><button className="icon-button" aria-label={t.close} onClick={close}><X size={25} /></button></div>
-        <nav className="mobile-nav" aria-label={t.navigation}>{links}<a href={`${home}#projects`} onClick={close}>{t.viewProjects}</a></nav>
+        <nav className="mobile-nav" aria-label={t.navigation}>{links}</nav>
       </div>
     </dialog>
     <dialog className="settings-dialog" ref={settings} aria-labelledby="settings-title" onCancel={close} onClose={() => setOpen(null)} onClick={event => { if (event.target === event.currentTarget) close(); }}>

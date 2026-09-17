@@ -1,19 +1,14 @@
-// The 3D stage engine. One requestAnimationFrame loop writes custom properties,
-// so the per-frame cost is a handful of style writes instead of one per element.
+// The 3D stage engine, v2. One requestAnimationFrame loop owns every moving value on
+// the page: the hero camera dolly, per-block depth drift, pointer tilt, focal-plane
+// arming, the broadcast timecode and the video playhead.
 //
-// Layers of the effect:
-//   1. camera dolly       hero scroll pushes the world along Z, so depth layers stream past
-//   2. depth drift        [data-depth] blocks ride the Z axis while they cross the viewport
-//   3. pointer parallax   pointer angle tilts the hero world (pointer devices only)
-//   4. focal plane        [data-focus] blocks ease from blurred and recessed to sharp
-//   5. timecode           page progress becomes a 25 fps broadcast timecode
-//
-// Everything is opt-in and reversible: without this module, or with reduced motion,
-// the document is a plain readable page.
+// Video scrubbing: each [data-scrub] element is a <video> whose currentTime is driven
+// by how far its [data-scene] has crossed the viewport. Seeking is throttled to one
+// frame (1/25 s) so a slow seek never turns into jank, and every scene metric is
+// measured with offsetTop so transforms never corrupt the reading.
 
 const FRAME_RATE = 25;
-const TOTAL_HOURS = 16; // sixteen years of work, one hour each
-const DRIFT_LIMIT = 1;  // fraction of a block's depth travelled across one viewport pass
+const TOTAL_HOURS = 16;
 
 const cubic = (value) => value * value * (3 - 2 * value);
 const clamp = (value, min = 0, max = 1) => Math.min(max, Math.max(min, value));
@@ -26,7 +21,6 @@ const timecode = (progress) => {
   return [pad(Math.floor(whole / 3600)), pad(Math.floor(whole / 60) % 60), pad(whole % 60), pad(frames)].join(':');
 };
 
-// offsetTop walks the layout tree, so it stays valid while transforms are running.
 const layoutTop = (element) => {
   let top = 0, node = element;
   while (node) { top += node.offsetTop; node = node.offsetParent; }
@@ -34,7 +28,7 @@ const layoutTop = (element) => {
 };
 
 export function attachStage(root, { timecodeTarget } = {}) {
-  if (!root || typeof window === 'undefined') return { destroy() {} };
+  if (!root || typeof window === 'undefined') return { destroy() {}, remeasure() {} };
 
   const html = document.documentElement;
   const hero = root.querySelector('.stage-hero');
@@ -46,8 +40,6 @@ export function attachStage(root, { timecodeTarget } = {}) {
   const tiltOn = () => staged() && fineQuery.matches;
 
   // ---------------------------------------------------------------- focal plane
-  // Only armed when IntersectionObserver exists, so a failure can never leave
-  // content stuck in its pre-focus state.
   let observer = null;
   if ('IntersectionObserver' in window && motionQuery.matches) {
     observer = new IntersectionObserver((entries) => {
@@ -61,11 +53,20 @@ export function attachStage(root, { timecodeTarget } = {}) {
     html.classList.add('focus-ready');
   }
 
-  // ---------------------------------------------------------------- depth drift
+  // ---------------------------------------------------------------- scene metrics
+  const scenes = Array.from(root.querySelectorAll('[data-scene]')).map((element) => ({
+    element, top: 0, height: 1,
+    videos: Array.from(element.querySelectorAll('[data-scrub]')).map((video) => ({ video, written: -1 })),
+  }));
   const blocks = Array.from(root.querySelectorAll('[data-depth]')).map((element) => ({
     element, depth: Number(element.dataset.depth) || 0, top: 0, height: 1, written: 0,
   }));
+
   const measure = () => {
+    for (const scene of scenes) {
+      scene.top = layoutTop(scene.element);
+      scene.height = Math.max(1, scene.element.offsetHeight);
+    }
     for (const block of blocks) {
       block.element.style.setProperty('--drift', '0');
       block.top = layoutTop(block.element);
@@ -74,13 +75,13 @@ export function attachStage(root, { timecodeTarget } = {}) {
     }
   };
   measure();
+
   let measureTimer = 0;
   const onResize = () => { window.clearTimeout(measureTimer); measureTimer = window.setTimeout(measure, 180); };
   window.addEventListener('resize', onResize, { passive: true });
 
   // ---------------------------------------------------------------- pointer
-  let pointerX = 0, pointerY = 0;   // normalised target, -1 .. 1
-  let glowX = -999, glowY = -999;   // absolute pointer position for the follow spot
+  let pointerX = 0, pointerY = 0, glowX = -999, glowY = -999;
   const onPointer = (event) => {
     if (!tiltOn()) return;
     pointerX = (event.clientX / window.innerWidth) * 2 - 1;
@@ -98,13 +99,12 @@ export function attachStage(root, { timecodeTarget } = {}) {
     const scrollY = window.scrollY;
     const viewport = window.innerHeight;
     const scrollable = Math.max(1, html.scrollHeight - viewport);
-    const nextProgress = clamp(scrollY / scrollable);
     const heroHeight = hero ? hero.offsetHeight : viewport;
     const nextHero = clamp(scrollY / Math.max(1, heroHeight - viewport * 0.35));
-    const nextTiltX = tiltOn() ? pointerY * -2.6 : 0;
-    const nextTiltY = tiltOn() ? pointerX * 3.4 : 0;
+    const nextTiltX = tiltOn() ? pointerY * -2.4 : 0;
+    const nextTiltY = tiltOn() ? pointerX * 3 : 0;
 
-    progress += (nextProgress - progress) * 0.14;
+    progress += (clamp(scrollY / scrollable) - progress) * 0.14;
     heroProgress += (nextHero - heroProgress) * 0.12;
     tiltX += (nextTiltX - tiltX) * 0.07;
     tiltY += (nextTiltY - tiltY) * 0.07;
@@ -115,8 +115,6 @@ export function attachStage(root, { timecodeTarget } = {}) {
     const heroEase = cubic(clamp(heroProgress));
     html.style.setProperty('--sprog', progress.toFixed(4));
     html.style.setProperty('--hp', heroEase.toFixed(4));
-    // The world stops short of the far wall so the room and the rig stay behind the
-    // camera while the foreground dust streams past it.
     html.style.setProperty('--camz', (heroEase * 760).toFixed(1));
     html.style.setProperty('--rx', tiltX.toFixed(3));
     html.style.setProperty('--ry', tiltY.toFixed(3));
@@ -133,11 +131,24 @@ export function attachStage(root, { timecodeTarget } = {}) {
       else delete html.dataset.atTop;
     }
 
+    const span = viewport + 1200;
+    for (const scene of scenes) {
+      const seen = clamp((scrollY + viewport - scene.top) / span);
+      for (const item of scene.videos) {
+        const video = item.video;
+        if (!video || video.readyState < 1 || !Number.isFinite(video.duration) || video.duration <= 0) continue;
+        const target = Math.min(video.duration - 1 / FRAME_RATE, seen * video.duration);
+        if (Math.abs(target - item.written) > 1 / FRAME_RATE) {
+          item.written = target;
+          try { video.currentTime = target; } catch { /* Seeking before metadata arrives is harmless. */ }
+        }
+      }
+    }
+
     if (staged()) {
-      const span = viewport + 1200;
       for (const block of blocks) {
         const seen = clamp((scrollY + viewport - block.top) / span);
-        const drift = Math.round((seen - 0.5) * block.depth * DRIFT_LIMIT * 10) / 10;
+        const drift = Math.round((seen - 0.5) * block.depth * 10) / 10;
         if (Math.abs(drift - block.written) > 0.4) {
           block.written = drift;
           block.element.style.setProperty('--drift', String(drift));
@@ -151,7 +162,7 @@ export function attachStage(root, { timecodeTarget } = {}) {
   };
   frame = window.requestAnimationFrame(render);
 
-  const onMotionChange = () => { measure(); };
+  const onMotionChange = () => measure();
   motionQuery.addEventListener('change', onMotionChange);
   wideQuery.addEventListener('change', onMotionChange);
 

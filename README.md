@@ -1,24 +1,41 @@
 # Patrick Pan / 潘宇龙
 
-品牌活动与数字营销个人作品集。分支 `feat/3d-parallax-stage`，方向为 **3D Parallax Scrolling**。
+品牌活动与数字营销个人作品集。分支 `feat/3d-video-parallax`，方向为 **3D Video Parallax Scrolling**，视觉基调「荒诞高级」。需求与镜头表见 [3D Video Parallax Scrolling 需求文档](../3D%20Video%20Parallax%20Scrolling%20需求文档.md)。
 
 - 网站：[resume.datatrade.top](https://resume.datatrade.top/)
 - 仓库：[patrickstar231/resume](https://github.com/patrickstar231/resume)
 - 页面截图：[桌面](docs/previews/desktop.webp) / [手机](docs/previews/mobile.webp)
-- React 18、Vite 4、Tailwind CSS 3；GSAP 仅用于照片级视差，按需懒加载。
+- React 18、Vite 4、Tailwind CSS 3；GSAP 仅用于照片级视差，按需懒加载。视频用 CSS 3D + 滚动 scrub，不用 WebGL。
 
-## 视觉构思：追光
+## 视觉构思：荒诞高级
 
-整站只有一条线索：**一座正在开演的黑场，一束追光**。
+「高级」和「荒诞」都不是可以直接执行的风格词，先翻译成可观测的量（完整推导见需求文档第一节）：
 
-| 维度 | 取材 |
-| --- | --- |
-| 空间 | 正在开演的场馆。滚动就是摄像机沿 Z 轴推进：观众席到舞台，再到散场后的那张桌子 |
-| 颜色 | 场馆黑 `#08090B`，舞台追光琥珀 `#FFB25A`，LED 屏青 `#56D8D0`，港夜霓虹洋红 `#FF4D7D` |
-| 时间 | 一段 25 fps 录制时间码，把 16 年工作映射成 16 小时；滚动一格，时间码走一格 |
-| 物件 | 提词器式的滚入标题、场记板式的章节切换、散不掉的暖灯 |
+| 维度 | 取值 | 证据 |
+| --- | --- | --- |
+| Energy | 6/10，能量靠**尺度**制造，不靠饱和度 | 会展现场高能量，但主轴是 186 项验收清单、0 事故 |
+| Finish | 8/10，精密 | 东西越做得一丝不苟，它越不正常，张力才成立 |
+| Density | 3/10，分区间距 96-160px | 高端作品集一次只讲一件事 |
+| Weight | 7/10，Display 96-260px | 会展是巨物尺度 |
+| Seriousness | 4/10，允许失重与不可能的比例 | 用最正经的排版承载它，正经本身就是笑点 |
 
-首屏永远是黑场，向下滚动才亮起来；页面其余部分跟随系统或手动选择的明暗主题。追光只在关灯的场里成立，所以 Hero 不跟随主题。
+- **配色三色**：暖黑/纸白、墨青（冷底）、琥珀（唯一高饱和强调，表面占比 <=10%）。上一版的洋红+青属于被禁的 pink+cyan 组合，已剔除
+- **字体**：拉丁 Display 用 Bodoni Moda（高对比 Didone），中文 Display 用宋体（Songti SC / SimSun）——中文的高对比衬线就是宋体，两者视觉同源。刻意不用苹方/思源黑体，那是中文 UI 的 AI 默认值；正文仍用黑体保证屏幕可读
+- **全站骨架是演出 CUE 表**：左栏常驻 7 幕（黑场/精选项目/工作方法/幕后/场次表/舞台之外/谢幕），经历也按 CUE 表排版
+- **发丝细线** 1px 做分隔，按钮纯色无渐变，全站无外发光、无紫调背景
+
+## 3D Video Parallax Scrolling
+
+| 层 | 位置 | 说明 |
+| --- | --- | --- |
+| 视频播放头 | `src/site/stage.js` | 每个幕的 `<video data-scrub>` 由该幕在视口中的穿越进度驱动 currentTime，seek 阈值一帧（1/25s） |
+| 摄像机推进 | `src/site/stage.js` | 首屏滚动把世界沿 Z 轴推进 760px |
+| 深度漂移 | `[data-depth]` + 容器 `perspective` | 区块随滚动在 Z 轴漂移 |
+| 指针视差 | `src/site/stage.js` | 指针角度旋转舞台；不使用设备陀螺仪 |
+| 焦平面 | `[data-focus]` | 区块从虚焦、后退推到实焦 |
+| 照片视差 | `src/site/parallax.js` | 图片在自身画框内缓慢平移 |
+
+视频文件尚未提供，当前全部走降级链：视频位就绪（`public/video/`），缺失时用设计出来的空场底色 + 颗粒 + 暗角，页面始终是完整可读的简历。镜头表、alpha 与编码规格、运镜参数见需求文档第四、六节。
 
 ## 3D Parallax Scrolling 是怎么实现的
 
@@ -74,7 +91,7 @@ npm run test:browser
 | 照片响应式版本与画框比例 | `src/site/Media.jsx` |
 | 静态 HTML、SEO、站点地图 | `scripts/prerender.mjs` |
 
-英文根路径为 `/`，中文为 `/zh/`；案例为 `/projects/porsche-992/`、`/projects/huawei-b2b-live/`、`/projects/tencent-ecosystem/`，中文案例加 `/zh` 前缀。简历为 `/resume/` 与 `/zh/resume/`。锚点保留 `#about`、`#work`、`#contact`、`#projects`、`#life`、`#independent`。
+中文根路径为 `/`，英文为 `/en/`；案例为 `/projects/porsche-992/`、`/projects/huawei-b2b-live/`、`/projects/tencent-ecosystem/`，英文案例加 `/en` 前缀。简历为 `/resume/` 与 `/en/resume/`。锚点为 `#intro`、`#projects`、`#approach`、`#behind`、`#runsheet`、`#offstage`、`#contact`。每个案例页都带品牌方官网跳转。
 
 修改事实时同步修改两种语言。最新任职记录截止 2025.09，未据此推断当前工作状态。详见 [内容核对说明](docs/content-review.md)。
 
@@ -88,7 +105,9 @@ npm run test:browser
 npm run images -- --source-dir /absolute/path/to/photos
 ```
 
-脚本读取 `IMG_7721.jpeg`（桌前工作）、`IMG_7598.jpeg`（团队）、`beauty_1674806609290.JPG`（围餐）、`IMG_4537.JPG`（露营）、`IMG_2216.JPG`（雪地），生成 WebP / JPEG、多尺寸、手机构图与 1200 × 630 分享图，并更新 `docs/image-manifest.json`。工作照单版本不超过 220 KiB，生活照不超过 200 KiB。图片参数与 `src/site/Media.jsx`、`scripts/images.mjs` 同步维护。
+脚本从 `--source-dir` 读取 `IMG_7598.jpeg`（团队）、`beauty_1674806609290.JPG`（围餐）、`IMG_4537.JPG`（露营）、`IMG_2216.JPG`（雪地），另从仓库内 `source/cases/` 读取三张项目现场图，生成 WebP / JPEG、多尺寸与 1200 × 630 分享图，并更新 `docs/image-manifest.json`。工作照单版本不超过 220 KiB，案例图不超过 260 KiB。图片参数与 `src/site/Media.jsx`、`scripts/images.mjs` 同步维护。
+
+`IMG_7721.jpeg`（桌前工作）及其全部派生图已按要求从仓库与页面中移除。
 
 案例照片当前为空。确认素材对应项目、场次和使用权后，才在 `projects.js` 设置 `media.publicationStatus: 'approved'`。
 
@@ -96,9 +115,9 @@ npm run images -- --source-dir /absolute/path/to/photos
 
 由仓库所有者自行部署。本次改造不需要后端、数据库、付费服务或新的环境变量。
 
-1. 在 Vercel 关联本仓库。注意 Vercel 的 Production Branch 默认是 `main`，而本次改动在 `feat/3d-parallax-stage`。
+1. 在 Vercel 关联本仓库。注意 Vercel 的 Production Branch 默认是 `main`，而本次改动在 `feat/3d-video-parallax`。
 2. 推送该分支后，Vercel 会自动生成一条 **Preview 部署**，在控制台 Deployments 里拿到预览域名，先在这里验收。
-3. 验收通过后，把 `feat/3d-parallax-stage` 合并进 `main`，或在 Vercel 里把 Production Branch 指到该分支。
+3. 验收通过后，把 `feat/3d-video-parallax` 合并进 `main`，或在 Vercel 里把 Production Branch 指到该分支。中文已是默认语言（`/`），英文在 `/en/`。
 4. Framework Preset 使用 Vite，Node.js 使用 24.x，Install Command 为 `npm ci`，Build Command 为 `npm run build`，Output Directory 为 `dist`。仓库 `vercel.json` 已声明构建及输出目录。
 5. 清理控制台中旧的 SPA 全路径 rewrite，避免把未知地址改写成首页。构建产物已经为每条路由输出 `index.html`，并生成 `404.html`。
 6. 核对域名 `resume.datatrade.top`。如变更域名，先修改 `profile.origin`，重新生成 canonical、hreflang、分享地址与站点地图。

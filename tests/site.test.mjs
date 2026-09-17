@@ -24,9 +24,9 @@ test('every public route has matching static content, language and canonical met
 
 test('language switches preserve the page and existing anchors remain readable without JavaScript', async () => {
   for (const route of routes) assert.equal(translatedPath(resolveRoute(translatedPath(route))), route.path);
-  for (const locale of ['/', '/zh/']) {
+  for (const locale of ['/', '/en/']) {
     const html = await readFile(join('dist', locale, 'index.html'), 'utf8');
-    for (const id of ['about','independent','work','contact','projects','life']) assert.ok(html.includes(`id="${id}"`));
+    for (const id of ['intro','projects','approach','behind','runsheet','offstage','contact']) assert.ok(html.includes(`id="${id}"`));
     assert.ok(html.includes('<details class="earlier-experience">'));
     assert.ok(html.includes('2012.01'));
     for (const href of ['https://hk.datatrade.top/','https://xhslink.com/m/5DkJLXbYHA4','https://blog.csdn.net/patrickstar231','https://www.zhihu.com/people/patrick-pan-7']) assert.ok(html.includes(`href="${href}"`));
@@ -35,22 +35,48 @@ test('language switches preserve the page and existing anchors remain readable w
 });
 
 test('published photography is a real photograph set with modern and fallback formats', async () => {
-  for (const name of ['work-crew','work-desk','work-table']) {
+  for (const name of ['work-crew','work-table']) {
     for (const width of [640,960,1440]) {
       for (const extension of ['webp','jpg']) await readFile(join('public','images',`${name}-${width}.${extension}`));
     }
   }
-  for (const name of ['desk','camping']) {
-    for (const width of [640,960,1440]) await readFile(join('public','images',`${name}-${width}.webp`));
+  for (const name of ['camping','case-porsche','case-huawei','case-tencent']) {
+    for (const width of name === 'camping' ? [640,960,1440] : [720,1440]) {
+      for (const extension of ['webp','jpg']) await readFile(join('public','images',`${name}-${width}.${extension}`));
+    }
+  }
+  for (const width of [480,640,768]) await readFile(join('public','images',`snow-${width}.webp`));
+});
+
+test('case studies carry a brand page link and an approved site photograph', async () => {
+  for (const locale of ['/', '/en/']) {
+    const html = await readFile(join('dist', locale, 'index.html'), 'utf8');
+    for (const site of ['https://newsroom.porsche.com/en.html','https://activity.huaweicloud.com/kuaichengzhang_live.html','https://des.cloud.tencent.com/']) {
+      assert.ok(html.includes(`href="${site}"`), site);
+      assert.ok(html.includes('rel="noreferrer"'), 'external links must not pass the referrer');
+    }
+  }
+  for (const project of projects) {
+    assert.equal(project.media.publicationStatus, 'approved', project.id);
+    const page = await readFile(join('dist', '/', 'index.html'), 'utf8');
+    assert.ok(page.includes(project.media.imageName), project.id);
+  }
+});
+
+test('nothing from the retired desk photograph set survives in the build', async () => {
+  for (const entry of await readdir('public/images')) assert.ok(!/^(desk|work-desk|desk-mobile)-/.test(entry), entry);
+  for (const route of routes) {
+    const html = await readFile(join('dist', route.path, 'index.html'), 'utf8');
+    assert.ok(!/images\/(desk|work-desk|desk-mobile)-/.test(html), route.path);
   }
 });
 
 test('the stage engine stays optional: no depth markup depends on JavaScript to be readable', async () => {
-  for (const locale of ['/', '/zh/']) {
+  for (const locale of ['/', '/en/']) {
     const html = await readFile(join('dist', locale, 'index.html'), 'utf8');
     assert.ok(!html.includes('focus-ready'), 'focus reveal must be armed on the client only');
     assert.ok(!html.includes('data-focus="" hidden'), locale);
-    assert.ok(html.includes('class="stage stage-hero"'), locale);
+    assert.ok(html.includes('data-cue="intro"'), locale);
     assert.ok(html.includes('data-focus'), locale);
   }
 });
@@ -103,12 +129,12 @@ test('HTTP preview serves real pages, preserves queries during redirects, and re
   assert.ok((await compressed.text()).includes('id="main"'));
   const identity = await fetch(root + '/', { headers:{ 'Accept-Encoding':'gzip;q=0' } });
   assert.equal(identity.headers.get('content-encoding'),null);
-  const redirect = await fetch(root + '/zh/resume?source=test',{ redirect:'manual' });
+  const redirect = await fetch(root + '/en/resume?source=test',{ redirect:'manual' });
   assert.equal(redirect.status,308);
-  assert.equal(redirect.headers.get('location'),'/zh/resume/?source=test');
-  for (const path of ['/not-a-page/','/zh/does-not-exist/','/images/missing.webp']) {
+  assert.equal(redirect.headers.get('location'),'/en/resume/?source=test');
+  for (const path of ['/not-a-page/','/en/does-not-exist/','/images/missing.webp']) {
     const response = await fetch(root + path);
     assert.equal(response.status,404);
-    assert.ok((await response.text()).includes('This page isn’t here.'));
+    assert.ok((await response.text()).includes('这一页不存在。'));
   }
 });

@@ -1,10 +1,13 @@
 import { projects } from './projects.js';
 import { profile } from './profile.js';
 
-export const homePath = (locale) => locale === 'zh' ? '/zh/' : '/';
+// Chinese is the default audience: the root path serves it and English lives under /en/.
+export const DEFAULT_LOCALE = 'zh';
+
+export const homePath = (locale) => locale === 'en' ? '/en/' : '/';
 export const projectPath = (locale, id) => `${homePath(locale)}projects/${id}/`;
 export const resumePath = (locale) => `${homePath(locale)}resume/`;
-export const routes = ['en', 'zh'].flatMap(locale => [
+export const routes = [DEFAULT_LOCALE, 'en'].flatMap(locale => [
   { path: homePath(locale), locale, kind: 'home' },
   ...projects.map(project => ({ path: projectPath(locale, project.id), locale, kind: 'project', projectId: project.id })),
   { path: resumePath(locale), locale, kind: 'resume' },
@@ -12,11 +15,11 @@ export const routes = ['en', 'zh'].flatMap(locale => [
 
 export function resolveRoute(path) {
   const canonical = path === '/' || path.endsWith('/') ? path : `${path}/`;
-  return routes.find(route => route.path === canonical) || { path, locale: 'en', kind: '404' };
+  return routes.find(route => route.path === canonical) || { path, locale: DEFAULT_LOCALE, kind: '404' };
 }
 
 export function translatedPath(route) {
-  const locale = route.locale === 'en' ? 'zh' : 'en';
+  const locale = route.locale === DEFAULT_LOCALE ? 'en' : DEFAULT_LOCALE;
   if (route.kind === 'project') return projectPath(locale, route.projectId);
   if (route.kind === 'resume') return resumePath(locale);
   return homePath(locale);

@@ -1,131 +1,5 @@
 [
   {
-    "file": "desk-640.webp",
-    "width": 640,
-    "height": 800,
-    "bytes": 40162,
-    "quality": 79
-  },
-  {
-    "file": "desk-640.jpg",
-    "width": 640,
-    "height": 800,
-    "bytes": 47789,
-    "quality": 79
-  },
-  {
-    "file": "desk-960.webp",
-    "width": 960,
-    "height": 1200,
-    "bytes": 124736,
-    "quality": 79
-  },
-  {
-    "file": "desk-960.jpg",
-    "width": 960,
-    "height": 1200,
-    "bytes": 116934,
-    "quality": 79
-  },
-  {
-    "file": "desk-1440.webp",
-    "width": 1440,
-    "height": 1800,
-    "bytes": 246484,
-    "quality": 64
-  },
-  {
-    "file": "desk-1440.jpg",
-    "width": 1440,
-    "height": 1800,
-    "bytes": 253440,
-    "quality": 74
-  },
-  {
-    "file": "desk-mobile-640.webp",
-    "width": 640,
-    "height": 427,
-    "bytes": 19032,
-    "quality": 79
-  },
-  {
-    "file": "desk-mobile-640.jpg",
-    "width": 640,
-    "height": 427,
-    "bytes": 25702,
-    "quality": 79
-  },
-  {
-    "file": "desk-mobile-960.webp",
-    "width": 960,
-    "height": 640,
-    "bytes": 58340,
-    "quality": 79
-  },
-  {
-    "file": "desk-mobile-960.jpg",
-    "width": 960,
-    "height": 640,
-    "bytes": 61086,
-    "quality": 79
-  },
-  {
-    "file": "desk-mobile-1440.webp",
-    "width": 1440,
-    "height": 960,
-    "bytes": 176794,
-    "quality": 79
-  },
-  {
-    "file": "desk-mobile-1440.jpg",
-    "width": 1440,
-    "height": 960,
-    "bytes": 153673,
-    "quality": 79
-  },
-  {
-    "file": "work-desk-640.webp",
-    "width": 640,
-    "height": 427,
-    "bytes": 18998,
-    "quality": 79
-  },
-  {
-    "file": "work-desk-640.jpg",
-    "width": 640,
-    "height": 427,
-    "bytes": 26034,
-    "quality": 79
-  },
-  {
-    "file": "work-desk-960.webp",
-    "width": 960,
-    "height": 640,
-    "bytes": 56492,
-    "quality": 79
-  },
-  {
-    "file": "work-desk-960.jpg",
-    "width": 960,
-    "height": 640,
-    "bytes": 61930,
-    "quality": 79
-  },
-  {
-    "file": "work-desk-1440.webp",
-    "width": 1440,
-    "height": 960,
-    "bytes": 179518,
-    "quality": 79
-  },
-  {
-    "file": "work-desk-1440.jpg",
-    "width": 1440,
-    "height": 960,
-    "bytes": 154395,
-    "quality": 79
-  },
-  {
     "file": "work-crew-640.webp",
     "width": 640,
     "height": 427,
@@ -291,6 +165,90 @@
     "width": 768,
     "height": 1024,
     "bytes": 182638,
+    "quality": 79
+  },
+  {
+    "file": "case-porsche-720.webp",
+    "width": 720,
+    "height": 405,
+    "bytes": 29406,
+    "quality": 79
+  },
+  {
+    "file": "case-porsche-720.jpg",
+    "width": 720,
+    "height": 405,
+    "bytes": 37992,
+    "quality": 79
+  },
+  {
+    "file": "case-porsche-1440.webp",
+    "width": 1440,
+    "height": 810,
+    "bytes": 68926,
+    "quality": 79
+  },
+  {
+    "file": "case-porsche-1440.jpg",
+    "width": 1440,
+    "height": 810,
+    "bytes": 98567,
+    "quality": 79
+  },
+  {
+    "file": "case-huawei-720.webp",
+    "width": 720,
+    "height": 405,
+    "bytes": 33222,
+    "quality": 79
+  },
+  {
+    "file": "case-huawei-720.jpg",
+    "width": 720,
+    "height": 405,
+    "bytes": 41243,
+    "quality": 79
+  },
+  {
+    "file": "case-huawei-1440.webp",
+    "width": 1440,
+    "height": 810,
+    "bytes": 80722,
+    "quality": 79
+  },
+  {
+    "file": "case-huawei-1440.jpg",
+    "width": 1440,
+    "height": 810,
+    "bytes": 111235,
+    "quality": 79
+  },
+  {
+    "file": "case-tencent-720.webp",
+    "width": 720,
+    "height": 405,
+    "bytes": 40810,
+    "quality": 79
+  },
+  {
+    "file": "case-tencent-720.jpg",
+    "width": 720,
+    "height": 405,
+    "bytes": 48174,
+    "quality": 79
+  },
+  {
+    "file": "case-tencent-1440.webp",
+    "width": 1440,
+    "height": 810,
+    "bytes": 105366,
+    "quality": 79
+  },
+  {
+    "file": "case-tencent-1440.jpg",
+    "width": 1440,
+    "height": 810,
+    "bytes": 143167,
     "quality": 79
   }
 ]
