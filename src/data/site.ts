@@ -177,13 +177,13 @@ export const socials = [
   { name: '知乎', url: 'https://www.zhihu.com/people/patrick-pan-7', note: '活动增长方法论' },
 ];
 
-/* 现场素材带：每张照片只出现一次语义（第二轮仅作滚动填充，alt 置空） */
+/* 现场素材带：每张图只出现一次语义（第二轮仅作滚动填充，alt 置空） */
 export const shots = [
   { src: '/images/porsche1.jpg', alt: '保时捷 911 沉浸展现场' },
   { src: '/images/huawei1.jpg', alt: '华为云快成长直播推流台' },
   { src: '/images/tencent1.jpg', alt: '腾讯数字生态大会主视觉' },
-  { src: '/images/life/teahouse.jpg', alt: '围炉煮茶现场记录' },
-  { src: '/images/life/dinner.jpg', alt: '客户晚宴动线实拍' },
+  { src: '/images/life/teahouse.jpg', alt: '围炉煮茶现场示意' },
+  { src: '/images/life/dinner.jpg', alt: '客户晚宴动线示意' },
 ];
 
 export const cantoneseProject = {

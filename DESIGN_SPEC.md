@@ -161,7 +161,7 @@ success  —  同上
 |---|---|---|
 | `public/images/hero-bust.jpg` | 已就位 | 460×1088 半身像，等分三段可切片，暖灰底 |
 | `public/images/{porsche1,huawei1,tencent1}.jpg` | 已就位 | 真实项目现场，16:9 |
-| `public/images/life/{dinner,teahouse}.jpg` | 已就位 | 真实生活/现场照 |
+| `public/images/life/{dinner,teahouse}.jpg` | 已就位 | 同场景 AI 生成图，画面无人（原实拍本人照片已按 §8.2 下架） |
 | `public/resume-panyulong.pdf` | 已就位 | 下载链接；ASCII 文件名避免 URL percent-encode，`download="潘宇龙 · 简历.pdf"` 保留保存时的中文名 |
 | `public/media/hero-loop.mp4` | 已就位 | 实测 1215 KiB / 10.04s / 960×528 / 24fps；16:9 横构图（背景平面 30×17，竖构图会被拉伸）、H.264、无声 |
 | `public/media/hover-{porsche,huawei,tencent}.mp4` | 已就位 | 实测 318 / 320 / 316 KiB，5.04s；hover 才 `play()`，离开设 `currentTime = 0` 并暂停 |
@@ -197,6 +197,25 @@ $T --in raw-media/footer.mp4  --out public/media/footer-reverse.mp4   --reverse 
 1. `expectsMediaDataInRealTime = false` 仍会跑赢编码器，队列满时 `appendSampleBuffer` **抛 ObjC 异常**，必须等 `isReadyForMoreMediaData`；
 2. `endSession(atSourceTime:)` 只关采样会话、**不写 trailer**，状态永远停在 `.writing` 且产物缺 moov 不可播；收尾要用 `finishWriting {}`（头文件明确说明不必先 endSession）；
 3. 倒放需要整段驻留内存（6s@960×528≈110MB），因此 `alwaysCopiesSampleData` 只在 `--reverse` 时打开。
+
+### 8.2 硬约束：站内不得出现本人照片
+
+用户明确规则：**个人照片一律不上站**；本人照片只允许作为 AI 生图的参考图，产出不得带水印，且画面里不应再出现可辨识的本人。这条优先级高于「实拍更有说服力」的取舍。
+
+本轮据此替换了 `shots[]` 里最后两张实拍生活照：
+
+| 路径 | 换前 | 换后 | blob |
+| --- | --- | --- | --- |
+| `public/images/life/teahouse.jpg` | 本人围炉煮茶正面实拍 | 同场景 AI 生成图，画面无人 | `8a4819a2` → `ad247510` |
+| `public/images/life/dinner.jpg` | 本人客户晚宴正面实拍 | 同场景 AI 生成图，画面无人 | `08a7fd48` → `c8788e0c` |
+
+文件路径不变，`alt` 由 `围炉煮茶现场记录` / `客户晚宴动线实拍` 改为 `围炉煮茶现场示意` / `客户晚宴动线示意`——图已不是实拍，读屏文案不能替它背书；`alt` 不参与渲染，所以视觉基线不受影响。§6 的 ShotBand 配方、§11 的读屏证据、`audit-a11y` 结论全部原样有效；替代图直接取自 `product-design-0918` 的 `60d8843`（「生活照换成 AI 生成场景图」），不重复生成一份。
+
+**全量素材复查**：站内其余图片引用为 `hero-bust.jpg`（断裂古典石膏像）、`porsche1/huawei1/tencent1.jpg`（舞台 / 主视觉 / 会场空镜）。4 段 mp4 用 AVFoundation 抽帧器（`AVAssetImageGenerator`，与 §8.1 同源）在 0.3 / 2.5 / 5.5s 各抽一帧、拼成 contact sheet 逐帧看过：只出现背影、剪影与操作台手部，无可辨识正脸。`huawei1.jpg` 是公开发布的直播海报，含三位**署名嘉宾**（第三方公开物料，非本人），保留。
+
+**基线影响**：素材带只在 `07-work-1` 顶部露出 46px 条带，是唯一受影响的比对屏（严格逐通道 >8 的差值 19585 px，bbox `(1022,0)-(1439,46)`，全部落在该瓦片内）；`04-experience-table` 与 `16-mobile-experience` 差值恒为 0，其余三屏的差值（`02` 12px、`10` 2751px、`12` 64px、`14` 2578px）都落在 §13 的噪声地板内。因此只刷新 `07-work-1` 的 expected/actual 这一对（内容变更是刻意的，不是放宽阈值），`compare-images.mjs` 重跑 7 屏 `findings:0`，`audit-ui-alignment` 计数不变（`{major:5, minor:4, debt:5}`）。
+
+**残留暴露（未处理，需单独决策）**：两张原片自 `baef578` 起就在版本库里，`main` 与其余分支的历史提交仍含原件 blob，本分支只改了工作树内容、没有改写历史。彻底下架需要 history rewrite + 强推（影响所有已分出的分支与协作者），属破坏性操作，需另行确认；原始文件另存于仓库外的 `../removed-personal-photos/`。
 
 ## 9. 与需求文档的偏差（明确记录）
 
