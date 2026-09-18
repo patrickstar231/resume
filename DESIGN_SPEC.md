@@ -192,6 +192,10 @@ WCAG 相对亮度计算（正文最小字号为 13px uppercase，按 4.5:1 判�
 
 `vercel.json`：`/media/*`、`/assets/*`、`/models/*` → `public, max-age=31536000, immutable`（media 另加 `Accept-Ranges: bytes`）；`/images/*` → 7 天 + stale-if-error。
 
+版本库：`patrickstar231/resume` 分支 `feat/3d-video-parallax-standalone`（与老站 `main` 是两条独立历史，不交叉 merge）。`.gitignore` 排除 `node_modules/`（154MB）、`dist/`（6.9MB）、`raw-media/`（14MB 原始投料）；入库 32 个文件约 5MB，最大单文件 `hero-loop.mp4` 1.2MB，不需要 Git LFS。
+
+**Tailwind v4 自动内容扫描的两个坑（实测）**：① 它遵守 `.gitignore`——在补 `.gitignore` 之前它会扫 `dist/`，把上一次构建产物里的类名当来源，CSS 体积自我放大（26.88 kB → 加 ignore 后 23.60 kB）。② `*.md` 正文里写的类名（如本文档提到的 `bg-ink/55`）也会生成工具类，改文档会让 CSS 漂 160B。要彻底确定化可改成 `@import 'tailwindcss' source(none)` + 显式 `@source`。
+
 ## 13. 视觉复验方法（可复现）
 
 内置 Browser 面板处于隐藏态时（`document.visibilityState === 'hidden'`），Chrome 会冻结 `requestAnimationFrame` 与 `ResizeObserver` 派发：R3F 拿不到容器尺寸 → canvas 停在 300×150 → WebGL 一帧都不画，截图工具同时拒绝出图。这是环境限制，不是站点缺陷（同页 `dispatchEvent(new Event('resize'))` 后画布立刻变 2064×1874 可作对照实验）。
