@@ -1,0 +1,107 @@
+@import 'tailwindcss';
+
+@theme {
+  --color-ink: #0b0a09;
+  --color-bg: #121110;
+  --color-surface: #1a1817;
+  --color-line: rgba(242, 239, 230, 0.12);
+  --color-line-strong: rgba(242, 239, 230, 0.28);
+  --color-cream: #f2efe6;
+  --color-muted: #a29a8d;
+  --color-brass: #c08a3e;
+  --color-verdigris: #5e8c7f;
+
+  --font-display: 'Instrument Serif', 'PingFang SC', 'Hiragino Sans', serif;
+  --font-sans: 'Archivo', 'PingFang SC', 'Hiragino Sans', 'Microsoft YaHei', sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+
+  --text-display: clamp(3.5rem, 11vw, 9rem);
+  --text-display--line-height: 0.92;
+  --text-display--letter-spacing: -0.02em;
+  --text-h1: clamp(2.25rem, 5vw, 4rem);
+  --text-h1--line-height: 1.04;
+  --text-h1--letter-spacing: -0.015em;
+  --text-h2: clamp(1.6rem, 3vw, 2.4rem);
+  --text-h2--line-height: 1.15;
+  --text-h3: 1.35rem;
+  --text-h3--line-height: 1.35;
+  --text-lede: clamp(1.05rem, 1.5vw, 1.25rem);
+  --text-lede--line-height: 1.6;
+  --text-body: 1rem;
+  --text-body--line-height: 1.65;
+  --text-caption: 0.8125rem;
+  --text-caption--line-height: 1.5;
+  --text-caption--letter-spacing: 0.14em;
+
+  --spacing-section-y: clamp(6rem, 14vh, 9rem);
+  --spacing-section-x: clamp(1.25rem, 5vw, 5rem);
+  --spacing-stack-sm: 0.75rem;
+  --spacing-stack-md: 1.5rem;
+  --spacing-stack-lg: 3rem;
+  --spacing-stack-xl: 5rem;
+
+  --radius-card: 0px;
+  --radius-frame: 2px;
+}
+
+@layer base {
+  html {
+    background: var(--color-ink);
+    color-scheme: dark;
+  }
+
+  body {
+    margin: 0;
+    background: var(--color-bg);
+    color: var(--color-cream);
+    font-family: var(--font-sans);
+    font-size: var(--text-body);
+    -webkit-font-smoothing: antialiased;
+    overflow-x: clip;
+  }
+
+  section[id],
+  footer[id] {
+    scroll-margin-top: 6rem;
+  }
+
+  ::selection {
+    background: var(--color-brass);
+    color: var(--color-ink);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-brass);
+    outline-offset: 3px;
+  }
+}
+
+@utility label-mono {
+  font-family: var(--font-mono);
+  font-size: var(--text-caption);
+  letter-spacing: var(--text-caption--letter-spacing);
+  text-transform: uppercase;
+}
+
+@utility grain {
+  position: relative;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.045;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

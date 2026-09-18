@@ -1,0 +1,12 @@
+node_modules/
+dist/
+.vite/
+.vercel/
+
+# 原始投料素材（14MB，只本机保留，转码产物 public/media/ 才入库）
+raw-media/
+
+.env
+.env.*
+*.log
+.DS_Store
