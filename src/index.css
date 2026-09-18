@@ -40,8 +40,42 @@
   --spacing-stack-lg: 3rem;
   --spacing-stack-xl: 5rem;
 
+  /* 场刊脊：桌面常驻 240px 元数据轨，正文整列右移一个脊宽 */
+  --spacing-spine: 15rem;
+  --rule-hairline: 1px;
+  /* WebGL 背景视频的环境光压暗档，供 canvas 运行时读取 */
+  --canvas-video-dim: #555555;
+  /* 触控目标下限（WCAG 2.5.5）与主 CTA 高度 */
+  --spacing-hit: 2.75rem;
+  --spacing-hit-lg: 3rem;
+  /* 素材带瓦片 / 堆叠卡几何 */
+  --spacing-band: 22vh;
+  --spacing-card: 86vh;
+  --spacing-card-pad: clamp(1.25rem, 3vw, 2.75rem);
+  /* Work 堆叠卡槽位：首张 96，其后每张让出 28 */
+  --spacing-slot-1: 6rem;
+  --spacing-slot-2: 7.75rem;
+  --spacing-slot-3: 9.5rem;
+
+  /* 行长：汉字可读行长比拉丁窄，单独定标而不是沿用 ch */
+  --container-heading: 18ch;
+  --container-title: 14ch;
+  --container-lead: 46ch;
+  --container-body: 42ch;
+  --container-measure: 52ch;
+  --container-shot: 30vw;
+
   --radius-card: 0px;
   --radius-frame: 2px;
+
+  /* 触觉缩放档位：active 卡扣 / hover 微升，供 active:scale-tap 与 hover:scale-lift 使用 */
+  --scale-tap: 0.98;
+  --scale-lift: 1.02;
+
+  /* 非命名空间：只输出变量，不生成工具类 */
+  --focus-ring-width: 2px;
+  --focus-ring-offset: 3px;
+  --stage-perspective: 900px;
 }
 
 @layer base {
@@ -71,8 +105,8 @@
   }
 
   :focus-visible {
-    outline: 2px solid var(--color-brass);
-    outline-offset: 3px;
+    outline: var(--focus-ring-width) solid var(--color-brass);
+    outline-offset: var(--focus-ring-offset);
   }
 }
 
@@ -94,6 +128,93 @@
     opacity: 0.045;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
   }
+}
+
+/* Splash 幕布的透视台 */
+@utility stage-perspective {
+  perspective: var(--stage-perspective);
+}
+
+/* 封面压暗层：三层各管一件事，几何与色值全部收在这里，组件不再带裸值 */
+@utility scrim-top {
+  position: absolute;
+  inset-inline: 0;
+  top: 0;
+  z-index: -1;
+  height: 9rem;
+  background: linear-gradient(
+    to bottom,
+    var(--color-ink),
+    color-mix(in srgb, var(--color-ink) 85%, transparent) 55%,
+    transparent
+  );
+}
+
+@utility scrim-left {
+  position: absolute;
+  inset-block: 0;
+  left: 0;
+  z-index: -1;
+  display: none;
+  /* 只罩住封面文字列，避免把右移后的头像一起压暗 */
+  width: 68%;
+  background: linear-gradient(
+    to right,
+    var(--color-ink),
+    color-mix(in srgb, var(--color-ink) 80%, transparent) 62%,
+    transparent
+  );
+
+  @media (width >= 64rem) {
+    display: block;
+  }
+}
+
+@utility scrim-bottom {
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  z-index: -1;
+  height: 62%;
+  background: linear-gradient(
+    to top,
+    var(--color-bg),
+    color-mix(in srgb, var(--color-bg) 85%, transparent) 60%,
+    transparent
+  );
+
+  @media (width >= 64rem) {
+    display: none;
+  }
+}
+
+@utility scrim-flat {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: color-mix(in srgb, var(--color-ink) 55%, transparent);
+
+  @media (width >= 64rem) {
+    display: none;
+  }
+}
+
+/* 字符雨的径向淡出：从组件内联样式搬进 token 层 */
+@utility glyph-mask {
+  mask-image: radial-gradient(115% 90% at 84% 42%, #000 0%, #000 34%, transparent 72%);
+  -webkit-mask-image: radial-gradient(115% 90% at 84% 42%, #000 0%, #000 34%, transparent 72%);
+}
+
+/* rundown 表与页脚列表共用的发丝行线 */
+@utility rule-row {
+  border-top: var(--rule-hairline) solid var(--color-line);
+}
+
+/* 数字轨：等宽 + tabular，年份 / 指标对齐用 */
+@utility num {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
 }
 
 @media (prefers-reduced-motion: reduce) {

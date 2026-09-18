@@ -1,12 +1,12 @@
 import { useReducedMotion } from 'framer-motion';
 import { lazy, Suspense } from 'react';
-import { HeroCopy, NavBar, Splash } from './components/Chrome';
+import { Cover, Spine, Splash, TopBar } from './components/Chrome';
 import {
-  AboutSection,
-  ProjectsSection,
+  ExperienceSection,
+  MethodSection,
+  ShotBand,
   SiteFooter,
-  SocialRail,
-  WorkMarquee,
+  WorkSection,
 } from './components/Sections';
 import { useSmoothScroll } from './hooks/useSmoothScroll';
 
@@ -20,25 +20,30 @@ export default function App() {
     <>
       <a
         href="#top"
-        className="label-mono sr-only focus:not-sr-only focus:fixed focus:left-[var(--spacing-section-x)] focus:top-4 focus:z-50 focus:bg-cream focus:px-4 focus:py-2 focus:text-ink"
+        className="label-mono sr-only focus:not-sr-only focus:fixed focus:left-section-x focus:top-4 focus:z-50 focus:bg-cream focus:px-4 focus:py-2 focus:text-ink"
       >
         跳到主要内容
       </a>
       <Splash reducedMotion={reducedMotion} />
-      <NavBar />
+      <Spine />
+      <TopBar />
       <Suspense fallback={null}>
         <HeroCanvas reducedMotion={reducedMotion} />
       </Suspense>
-      <main className="relative z-10">
-        <HeroCopy />
-        <div className="bg-bg">
-          <WorkMarquee />
-          <SocialRail />
-          <AboutSection reducedMotion={reducedMotion} />
-          <ProjectsSection />
-        </div>
+      {/* 脊轨固定，正文列整体右移一个脊宽；页脚同列，保持单一阅读轴 */}
+      <div className="relative z-10 lg:pl-spine">
+        <main>
+          <Cover />
+          {/* Cover 之后的区块必须不透明，否则固定的 WebGL 画布会透出 */}
+          <div className="bg-bg">
+            <ExperienceSection />
+            <ShotBand />
+            <WorkSection />
+            <MethodSection reducedMotion={reducedMotion} />
+          </div>
+        </main>
         <SiteFooter />
-      </main>
+      </div>
     </>
   );
 }

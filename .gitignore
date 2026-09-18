@@ -1,7 +1,10 @@
-node_modules/
+# 无斜杠：worktree 里的 node_modules 是指向主检出的符号链接，`node_modules/` 匹配不到它
+node_modules
 dist/
 .vite/
 .vercel/
+# Design QA 产物（20 屏截图 8.3MB），由 DESIGN_SPEC.md §13 的脚本本机重生成
+.design-qa/
 
 # 原始投料素材（14MB，只本机保留，转码产物 public/media/ 才入库）
 raw-media/

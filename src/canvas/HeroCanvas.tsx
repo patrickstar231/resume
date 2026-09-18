@@ -7,16 +7,22 @@ const SLICE_W = 1.7;
 const SLICE_H = 1.34;
 const SLICE_D = 0.14;
 
+/* 3D 材质/灯光色必须与 @theme 同源，避免字面量漂移 */
+function themeColor(name: string, fallback: string) {
+  return getComputedStyle(document.documentElement).getPropertyValue(name).trim() || fallback;
+}
+
 function useSlices() {
   const source = useLoader(THREE.TextureLoader, '/images/hero-bust.jpg');
   return useMemo(() => {
     source.colorSpace = THREE.SRGBColorSpace;
+    const bodyColor = themeColor('--color-surface', '#1a1817');
     return [0, 1, 2].map((i) => {
       const face = source.clone();
       face.needsUpdate = true;
       face.repeat.set(1, 1 / 3);
       face.offset.set(0, 1 - (i + 1) / 3);
-      const body = new THREE.MeshStandardMaterial({ color: '#1a1817', roughness: 0.9 });
+      const body = new THREE.MeshStandardMaterial({ color: bodyColor, roughness: 0.9 });
       const front = new THREE.MeshStandardMaterial({ map: face, roughness: 0.86 });
       return { materials: [body, body, body, body, front, body], face };
     });
@@ -37,9 +43,10 @@ function SlicedPortrait({ reducedMotion }: { reducedMotion: boolean }) {
     const pointerX = reducedMotion ? 0 : scrollState.pointerX;
     const pointerY = reducedMotion ? 0 : scrollState.pointerY;
     const compact = size.width < 900;
-    const baseX = compact ? 1.12 : 0.95;
+    // 桌面正文列被 240px 脊轨右移，头像同步右移并略缩，避免压住标题
+    const baseX = compact ? 1.12 : 1.8;
     const baseY = compact ? 0.74 : 0.1;
-    const targetScale = compact ? 0.5 : 1;
+    const targetScale = compact ? 0.5 : 0.84;
 
     g.rotation.y += (-0.42 + p * 0.9 + pointerX * 0.16 - g.rotation.y) * ease;
     g.rotation.x += (pointerY * -0.07 - g.rotation.x) * ease;
@@ -62,7 +69,7 @@ function SlicedPortrait({ reducedMotion }: { reducedMotion: boolean }) {
   });
 
   return (
-    <group ref={group} position={[0.95, 0.1, -0.6]}>
+    <group ref={group} position={[1.8, 0.1, -0.6]}>
       {slices.map((slice, i) => (
         <mesh key={i} ref={refs[i]} material={slice.materials} castShadow>
           <boxGeometry args={[SLICE_W, SLICE_H, SLICE_D]} />
@@ -108,7 +115,8 @@ function VideoPlane({ src }: { src: string }) {
   return (
     <mesh ref={plane} position={[0, 0, -7]}>
       <planeGeometry args={[30, 17]} />
-      <meshBasicMaterial map={texture} toneMapped={false} />
+      {/* 压暗到环境光级别：封面标题列右移后会与视频亮部重叠 */}
+      <meshBasicMaterial map={texture} color={themeColor('--canvas-video-dim', '#555555')} toneMapped={false} />
     </mesh>
   );
 }
@@ -117,6 +125,16 @@ function mediaExists(src: string, set: (v: boolean) => void) {
   fetch(src, { method: 'HEAD' })
     .then((res) => set(res.ok && (res.headers.get('content-type') ?? '').startsWith('video/')))
     .catch(() => set(false));
+}
+
+/* 封面随滚动离场：不透明区块压上来之前先淡掉，避免硬边切断头像 */
+function CanvasFade() {
+  const { gl } = useThree();
+  useFrame(() => {
+    const p = scrollState.heroProgress;
+    gl.domElement.style.opacity = String(Math.min(Math.max(1 - (p - 0.2) / 0.35, 0), 1));
+  });
+  return null;
 }
 
 export function HeroCanvas({ reducedMotion }: { reducedMotion: boolean }) {
@@ -142,6 +160,8 @@ export function HeroCanvas({ reducedMotion }: { reducedMotion: boolean }) {
 
   return (
     <Canvas
+      aria-hidden
+      role="presentation"
       style={{ position: 'fixed', inset: 0, pointerEvents: 'none' }}
       camera={{ position: [0, 0, 5.1], fov: 42 }}
       dpr={[1, 2]}
@@ -150,7 +170,8 @@ export function HeroCanvas({ reducedMotion }: { reducedMotion: boolean }) {
     >
       <ambientLight intensity={1.15} />
       <directionalLight position={[3, 5, 4]} intensity={1.7} />
-      <directionalLight position={[-4, -1, 2]} intensity={0.35} color="#5e8c7f" />
+      <directionalLight position={[-4, -1, 2]} intensity={0.35} color={themeColor('--color-verdigris', '#5e8c7f')} />
+      <CanvasFade />
       <Suspense fallback={null}>
         {heroVideo ? <VideoPlane src="/media/hero-loop.mp4" /> : null}
         <SlicedPortrait reducedMotion={reducedMotion} />

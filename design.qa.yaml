@@ -1,0 +1,146 @@
+project:
+  name: resume-parallax
+  # 本分支的复验走 vite preview（5299），不是 5199 的 dev server——5199 属于另一条工作线
+  baseUrl: http://localhost:5299
+  outputDir: .design-qa
+
+design:
+  # 机器可读契约：frontmatter token/component 表 + 8 个必需章节，供 audit-design-md.mjs 消费
+  designMd: DESIGN.md
+  # 决策理由与实测证据（人读），不作为 token 契约来源
+  screenSpec: DESIGN_SPEC.md
+
+screens:
+  - name: 02-cover-top
+    mode: regression
+    expected:
+      type: image
+      path: .design-qa/expected/02-cover-top.png
+    app:
+      url: /
+      viewport:
+        width: 1440
+        height: 900
+      deviceScaleFactor: 1
+      fullPage: false
+  - name: 04-experience-table
+    mode: regression
+    expected:
+      type: image
+      path: .design-qa/expected/04-experience-table.png
+    app:
+      url: /#experience
+      viewport:
+        width: 1440
+        height: 900
+      deviceScaleFactor: 1
+      fullPage: false
+  - name: 07-work-1
+    mode: regression
+    expected:
+      type: image
+      path: .design-qa/expected/07-work-1.png
+    app:
+      url: /#work
+      viewport:
+        width: 1440
+        height: 900
+      deviceScaleFactor: 1
+      fullPage: false
+  - name: 10-method-caps
+    mode: regression
+    expected:
+      type: image
+      path: .design-qa/expected/10-method-caps.png
+    app:
+      url: /#method
+      viewport:
+        width: 1440
+        height: 900
+      deviceScaleFactor: 1
+      fullPage: false
+  - name: 12-footer
+    mode: regression
+    expected:
+      type: image
+      path: .design-qa/expected/12-footer.png
+    app:
+      url: /#contact
+      viewport:
+        width: 1440
+        height: 900
+      deviceScaleFactor: 1
+      fullPage: false
+  - name: 14-mobile-cover
+    mode: regression
+    expected:
+      type: image
+      path: .design-qa/expected/14-mobile-cover.png
+    app:
+      url: /
+      viewport:
+        width: 390
+        height: 844
+      deviceScaleFactor: 2
+      fullPage: false
+  - name: 16-mobile-experience
+    mode: regression
+    expected:
+      type: image
+      path: .design-qa/expected/16-mobile-experience.png
+    app:
+      url: /#experience
+      viewport:
+        width: 390
+        height: 844
+      deviceScaleFactor: 2
+      fullPage: false
+
+uiAlignment:
+  runVisualComparison: true
+  runComponentAudit: true
+  runDebtAudit: true
+  # a11y 由本机 axe harness 跑三档（桌面 / 移动 / reduced），见 DESIGN_SPEC.md §11
+  runA11yAudit: false
+  measurementTolerancePx: 1
+
+code:
+  include:
+    - src/**/*.{ts,tsx,css}
+  exclude:
+    - node_modules/**
+    - dist/**
+    - .design-qa/**
+
+components:
+  libraryImportPatterns:
+    - '@/components'
+    - './components/'
+    - '../components/'
+  rawElementPolicy:
+    button: prefer-design-system
+    input: prefer-design-system
+    select: prefer-design-system
+    textarea: prefer-design-system
+    dialog: prefer-design-system
+  allowedRawElementFiles:
+    - 'src/components/**'
+
+a11y:
+  disabledRules: []
+  excludeSelectors:
+    - '[data-a11y-ignore]'
+
+debt:
+  # audit-design-debt.mjs 只读这一个键（其余阈值键它不消费），ok 由 blocker/major 条数决定。
+  # 因此「上限」不在这份配置里，而在 DESIGN_SPEC.md §14 的债务台账：
+  # 每次改动后重跑审计，把 summary 与台账逐条比对，多出一条就是新增债务。
+  # 本次实测：14 条 = 5 inline-style(major) + 5 hard-coded-color(debt) + 4 px-magic-number(minor)。
+  # 其中 5 条 major 全部是 framer-motion 的 MotionValue 绑定（x/scale/opacity）与 R3F <Canvas>
+  # 容器的 style（R3F 会在容器上写行内 position/pointer-events，utility 在层叠里必输，见 §9.6）
+  # ——扫描器对 style= 一律判 major、无豁免键，
+  # 所以 debt 报告的 ok:false 是工具的判定口径，不是本站未修的缺陷，逐条理由见 §14。
+  allowedColorValues:
+    - '#000'
+    - '#fff'
+    - transparent

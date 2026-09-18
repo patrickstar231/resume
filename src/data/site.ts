@@ -9,9 +9,103 @@ export const profile = {
 };
 
 export const navLinks = [
+  { id: 'experience', label: 'Experience' },
   { id: 'work', label: 'Work' },
-  { id: 'about', label: 'About' },
+  { id: 'method', label: 'Method' },
   { id: 'contact', label: 'Contact' },
+];
+
+/* ── Experience ────────────────────────────────────────────────
+   事实来源：老站 resume-old-ref/src/constants/index.js 的 experiences，
+   指标与时间原样搬运，不做美化、不补写未记录的条目。 */
+export type Experience = {
+  from: string;
+  to: string;
+  company: string;
+  title: string;
+  result: string;
+  metrics: string[];
+};
+
+export const experiences: Experience[] = [
+  {
+    from: '2022.09',
+    to: '至今',
+    company: 'Beijing Weihou Times Technology',
+    title: 'Project Supervisor',
+    result: '把技术直播从一次性活动改造成可复制栏目，华为云续约率做到 100%。',
+    metrics: ['12,000 峰值在线', '21 条运营标准', '50+ 场直播上官网'],
+  },
+  {
+    from: '2020.09',
+    to: '2022.03',
+    company: 'Shanghai Fengfan Advertising Media',
+    title: 'Sales Director',
+    result: '活动—内容—资源打包卖，年营收同比 +170%，客户留存率 91%。',
+    metrics: ['+170% YoY', '91% 留存（高于行业 35%）', '带出 3 名高级管理'],
+  },
+  {
+    from: '2019.09',
+    to: '2020.03',
+    company: 'Vokdams Consulting Shanghai',
+    title: 'Project Manager',
+    result: '保时捷 992「Time Tunnel」沉浸展：MR 动线 + UGC 裂变，停留时长 3 倍于行业。',
+    metrics: ['980M+ 微博曝光', '65 分钟人均停留'],
+  },
+  {
+    from: '2019.02',
+    to: '2019.08',
+    company: 'CYTS Linkage PR Consulting',
+    title: 'Strategy Manager',
+    result: '3 场 50 万美元级行业论坛 + 15 支企业视频端到端自制，危机响应压到 2 小时内。',
+    metrics: ['3 场 500K+ 论坛', '15+ 支视频', '2 小时危机响应'],
+  },
+];
+
+export const companies = [
+  'Huawei',
+  'Tencent',
+  'Porsche',
+  'Mercedes-Benz',
+  'Ping An',
+  'Ningbo',
+  'AstraZeneca',
+  'Pfizer',
+];
+
+/* 能力轨：老站 services 的四条自我定位，每条配一个可核对的证据指标 */
+export type Capability = {
+  latin: string;
+  zh: string;
+  proof: string;
+  evidence: string;
+};
+
+export const capabilities: Capability[] = [
+  {
+    latin: 'Campaign Architect',
+    zh: '活动策划',
+    proof: '3 场 500K+ 预算行业论坛',
+    evidence: '含政府级签约仪程，零差错',
+  },
+  {
+    latin: 'Experience Engineer',
+    zh: '体验工程',
+    proof: '65 分钟人均停留',
+    evidence: '约为行业均值 3 倍',
+  },
+  {
+    latin: 'Backend Growth Stack',
+    zh: '增长技术',
+    proof: '12,000 峰值在线 / 140ms 交互延迟',
+    evidence: '推流链路与自建 App 同一套习惯',
+  },
+  {
+    latin: 'Viral Systems Designer',
+    zh: '裂变机制',
+    proof: '980M+ 曝光 · 2.3B+ 全网',
+    evidence: 'UGC 素材回流官方渠道',
+  },
 ];
 
 export type Project = {
@@ -83,14 +177,13 @@ export const socials = [
   { name: '知乎', url: 'https://www.zhihu.com/people/patrick-pan-7', note: '活动增长方法论' },
 ];
 
-export const marqueeWords = [
-  'cantonese',
-  'code',
-  'chrome',
-  'porsche',
-  'huawei cloud',
-  'tencent des',
-  'repeat',
+/* 现场素材带：每张照片只出现一次语义（第二轮仅作滚动填充，alt 置空） */
+export const shots = [
+  { src: '/images/porsche1.jpg', alt: '保时捷 911 沉浸展现场' },
+  { src: '/images/huawei1.jpg', alt: '华为云快成长直播推流台' },
+  { src: '/images/tencent1.jpg', alt: '腾讯数字生态大会主视觉' },
+  { src: '/images/life/teahouse.jpg', alt: '围炉煮茶现场记录' },
+  { src: '/images/life/dinner.jpg', alt: '客户晚宴动线实拍' },
 ];
 
 export const cantoneseProject = {
