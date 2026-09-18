@@ -196,8 +196,8 @@ export function AboutSection({ reducedMotion }: { reducedMotion: boolean }) {
       className="grain relative overflow-hidden border-t border-line px-[var(--spacing-section-x)] py-section-y"
     >
       {!reducedMotion && visible ? <GlyphRain active={visible} /> : null}
-      <div className="relative grid gap-[var(--spacing-stack-xl)] lg:grid-cols-[1.1fr_0.9fr]">
-        <div>
+      <div className="relative grid gap-[var(--spacing-stack-xl)] lg:grid-cols-[0.9fr_1.1fr]">
+        <div className="lg:col-start-2">
           <p className="label-mono text-muted">Side project · 粤语</p>
           <h2 className="mt-[var(--spacing-stack-sm)] font-display text-h1">
             学嘢<span className="text-verdigris">·</span>一个人写完的粤语 App
@@ -223,7 +223,7 @@ export function AboutSection({ reducedMotion }: { reducedMotion: boolean }) {
             <span aria-hidden>↗</span>
           </a>
         </div>
-        <div className="grid grid-cols-2 gap-4 self-start">
+        <div className="grid grid-cols-2 gap-4 self-start lg:col-start-1 lg:row-start-1">
           {SHOTS.slice(3).map((shot) => (
             <img
               key={shot.src}
