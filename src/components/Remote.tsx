@@ -144,7 +144,7 @@ export function Remote({
 
   return (
     <div className="fixed inset-x-0 bottom-[var(--spacing-ticker)] z-40 flex justify-center px-2 pb-2 min-[1360px]:inset-x-auto min-[1360px]:bottom-[calc(var(--spacing-ticker)+1rem)] min-[1360px]:right-5 min-[1360px]:justify-end min-[1360px]:px-0 min-[1360px]:pb-0">
-      <div className="shell w-full max-w-[540px] px-2 py-2 min-[1360px]:w-[190px] min-[1360px]:px-4 min-[1360px]:py-4">
+      <div className="shell w-full max-w-[540px] px-2 py-2 min-[1360px]:w-[300px] min-[1360px]:px-4 min-[1360px]:py-4">
         <span className="label mb-3 hidden truncate whitespace-nowrap text-muted min-[1360px]:block">
           遥控器 · {station.id}
         </span>
@@ -245,10 +245,10 @@ export function Remote({
           </div>
         </div>
 
-        <p className="label mt-4 hidden truncate whitespace-nowrap text-muted min-[1360px]:block">
+        <p className="label mt-4 hidden text-muted min-[1360px]:block">
           键盘 0-3 换台 · Esc 关机
         </p>
-        <p className="label mt-1 hidden truncate whitespace-nowrap text-muted min-[1360px]:block" title={profile.email}>
+        <p className="label mt-1 hidden whitespace-nowrap text-muted min-[1360px]:block" title={profile.email}>
           热线 {profile.email}
         </p>
       </div>
