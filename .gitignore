@@ -6,6 +6,10 @@ dist/
 # 原始投料素材（14MB，只本机保留，转码产物 public/media/ 才入库）
 raw-media/
 
+# 本机视觉复验工具与截图（零安装约束：puppeteer-core 不入库）
+.verify/
+.design-qa/
+
 .env
 .env.*
 *.log

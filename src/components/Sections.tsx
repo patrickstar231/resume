@@ -1,453 +1,396 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
-import { motion, useReducedMotion, useScroll, useTransform, type MotionValue } from 'framer-motion';
+import { motion, useReducedMotion } from 'framer-motion';
 import { QRCodeSVG } from 'qrcode.react';
-import { cantoneseProject, marqueeWords, profile, projects, socials, type Project } from '../data/site';
+import { bRoll, bars, profile, programs, sisterShow, socials, station, tickerFacts } from '../data/site';
+import { usePresence } from '../hooks/useSmoothScroll';
+import { scrollToElement } from '../state/scroll';
+import {
+  ArrowRightIcon,
+  DownloadIcon,
+  EnvelopeIcon,
+  ExternalIcon,
+  PhoneRingIcon,
+  SealIcon,
+  TagIcon,
+  TvIcon,
+} from './icons';
 
-function useMedia(src?: string) {
-  const [ok, setOk] = useState(false);
-  useEffect(() => {
-    if (!src) return;
-    let alive = true;
-    fetch(src, { method: 'HEAD' })
-      .then((res) =>
-        alive && setOk(res.ok && (res.headers.get('content-type') ?? '').startsWith('video/'))
-      )
-      .catch(() => alive && setOk(false));
-    return () => {
-      alive = false;
-    };
-  }, [src]);
-  return ok;
-}
-
-const SHOTS = [
-  { src: '/images/porsche1.jpg', alt: '保时捷 911 沉浸展现场' },
-  { src: '/images/huawei1.jpg', alt: '华为云快成长直播推流台' },
-  { src: '/images/tencent1.jpg', alt: '腾讯数字生态大会主视觉' },
-  { src: '/images/life/teahouse.jpg', alt: '围炉煮茶现场记录' },
-  { src: '/images/life/dinner.jpg', alt: '客户晚宴动线实拍' },
-];
-
-function Row({ reverse, offset }: { reverse: boolean; offset: number }) {
-  const ref = useRef<HTMLDivElement>(null);
-  const reduced = useReducedMotion() ?? false;
-  const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'end start'] });
-  const shifted = useTransform(scrollYProgress, [0, 1], reverse ? ['-18%', '6%'] : ['6%', '-18%']);
-  const x = reduced ? 0 : shifted;
+function BarsStrip({ height = 'h-4' }: { height?: string }) {
   return (
-    <motion.div ref={ref} style={{ x }} className="flex w-[160%] gap-4 will-change-transform">
-      {Array.from({ length: 4 }).map((_, group) => (
-        <div key={group} className="flex shrink-0 gap-4">
-          {SHOTS.map((shot, i) => (
-            <img
-              key={`${group}-${i}`}
-              src={shot.src}
-              alt={group === 0 ? shot.alt : ''}
-              loading={group === 0 && offset === 0 ? 'eager' : 'lazy'}
-              decoding="async"
-              className="h-[22vh] w-[34vw] min-w-[240px] object-cover opacity-90"
-            />
-          ))}
-        </div>
+    <div aria-hidden className={`flex w-full ${height}`}>
+      {bars.map((b) => (
+        <span key={b} className={`flex-1 ${b}`} />
       ))}
-    </motion.div>
-  );
-}
-
-export function WorkMarquee() {
-  return (
-    <section aria-label="项目现场画面" className="overflow-hidden py-[var(--spacing-stack-lg)]">
-      <div className="space-y-4">
-        <Row reverse={false} offset={0} />
-        <Row reverse offset={1} />
-      </div>
-      <WordBand />
-    </section>
-  );
-}
-
-function WordBand() {
-  const line = marqueeWords.join(' · ');
-  const reduced = useReducedMotion() ?? false;
-  return (
-    <div className="mt-[var(--spacing-stack-lg)] overflow-hidden border-y border-line py-4">
-      <motion.div
-        className="flex gap-16 whitespace-nowrap"
-        animate={reduced ? undefined : { x: ['0%', '-50%'] }}
-        transition={reduced ? undefined : { duration: 38, ease: 'linear', repeat: Infinity }}
-      >
-        {[0, 1].map((k) => (
-          <span key={k} className="label-mono text-cream/60">
-            {line} · {line}
-          </span>
-        ))}
-      </motion.div>
     </div>
   );
 }
 
-function Char({ ch, i, total, progress }: { ch: string; i: number; total: number; progress: MotionValue<number> }) {
-  const start = (i / total) * 0.75;
-  const opacity = useTransform(progress, [start, start + 0.22], [0.55, 1]);
-  return (
-    <motion.span style={{ opacity }} className={ch === ' ' ? 'whitespace-pre' : undefined}>
-      {ch}
-    </motion.span>
-  );
-}
-
-function CharacterReveal({ text }: { text: string }) {
-  const ref = useRef<HTMLParagraphElement>(null);
-  const reduced = useReducedMotion() ?? false;
-  const { scrollYProgress } = useScroll({ target: ref, offset: ['start 0.85', 'end 0.35'] });
-  const chars = useMemo(() => text.split(''), [text]);
-  if (reduced) {
-    return (
-      <p className="max-w-[42ch] text-lede text-cream">
-        {text}
-      </p>
-    );
-  }
-  return (
-    <p ref={ref} className="max-w-[42ch] text-lede text-cream">
-      {chars.map((ch, i) => (
-        <Char key={i} ch={ch} i={i} total={chars.length} progress={scrollYProgress} />
-      ))}
-    </p>
-  );
-}
-
-function GlyphRain({ active }: { active: boolean }) {
-  const canvas = useRef<HTMLCanvasElement>(null);
-
-  useEffect(() => {
-    const node = canvas.current;
-    if (!node) return;
-    const ctx = node.getContext('2d');
-    if (!ctx) return;
-
-    const glyphs = '粵語飲茶嘅咗唔哋冇'.split('');
-    const dpr = Math.min(window.devicePixelRatio, 2);
-    const resize = () => {
-      node.width = node.offsetWidth * dpr;
-      node.height = node.offsetHeight * dpr;
-    };
-    resize();
-    window.addEventListener('resize', resize);
-
-    const drops = Array.from({ length: 46 }).map(() => ({
-      x: Math.random(),
-      y: Math.random(),
-      v: 0.0006 + Math.random() * 0.0016,
-      size: 12 + Math.random() * 26,
-      glyph: glyphs[Math.floor(Math.random() * glyphs.length)],
-      accent: Math.random() > 0.86,
-    }));
-
-    let frame = 0;
-    const draw = () => {
-      frame = requestAnimationFrame(draw);
-      if (!active) return;
-      ctx.clearRect(0, 0, node.width, node.height);
-      for (const d of drops) {
-        d.y += d.v;
-        if (d.y > 1.05) d.y = -0.05;
-        ctx.font = `${d.size * dpr}px 'JetBrains Mono', monospace`;
-        ctx.fillStyle = d.accent ? 'rgba(94,140,127,0.5)' : 'rgba(242,239,230,0.22)';
-        ctx.fillText(d.glyph, d.x * node.width, d.y * node.height);
-      }
-    };
-    draw();
-    return () => {
-      cancelAnimationFrame(frame);
-      window.removeEventListener('resize', resize);
-    };
-  }, [active]);
-
-  return (
-    <canvas
-      ref={canvas}
-      aria-hidden
-      className="absolute inset-0 h-full w-full opacity-40"
-      style={{
-        maskImage: 'radial-gradient(115% 90% at 84% 42%, #000 0%, #000 34%, transparent 72%)',
-        WebkitMaskImage: 'radial-gradient(115% 90% at 84% 42%, #000 0%, #000 34%, transparent 72%)',
-      }}
-    />
-  );
-}
-
-export function AboutSection({ reducedMotion }: { reducedMotion: boolean }) {
-  const [visible, setVisible] = useState(true);
-  const ref = useRef<HTMLElement>(null);
-
-  useEffect(() => {
-    const node = ref.current;
-    if (!node) return;
-    const io = new IntersectionObserver(([entry]) => setVisible(entry.isIntersecting));
-    io.observe(node);
-    return () => io.disconnect();
-  }, []);
+/** CH00 导视：台标 + 主持人 + 今日在售目录 + 库存状态。 */
+export function GuideChannel({ onJump }: { onJump: (key: string) => void }) {
+  const { ref } = usePresence<HTMLElement>();
 
   return (
     <section
-      id="about"
+      id="ch00"
       ref={ref}
-      className="grain relative overflow-hidden border-t border-line px-[var(--spacing-section-x)] py-section-y"
+      aria-labelledby="ch00-title"
+      className="min-h-[100svh] border-t-2 border-line"
     >
-      {!reducedMotion && visible ? <GlyphRain active={visible} /> : null}
-      <div className="relative grid gap-[var(--spacing-stack-xl)] lg:grid-cols-[0.9fr_1.1fr]">
-        <div className="lg:col-start-2">
-          <p className="label-mono text-muted">Side project · 粤语</p>
-          <h2 className="mt-[var(--spacing-stack-sm)] font-display text-h1">
-            学嘢<span className="text-verdigris">·</span>一个人写完的粤语 App
-          </h2>
-          <div className="mt-[var(--spacing-stack-md)]">
-            <CharacterReveal text={cantoneseProject.summary} />
+      <BarsStrip height="h-6" />
+      <div className="mx-auto grid w-full max-w-[1100px] gap-x-[var(--spacing-stack-xl)] gap-y-[var(--spacing-stack-lg)] px-[var(--spacing-gutter)] py-[var(--spacing-page-y)] lg:grid-cols-[1.05fr_0.95fr]">
+        <div className="min-w-0">
+          <p className="label flex items-center gap-2 text-phosphor">
+            <span aria-hidden className="crt-flicker h-2.5 w-2.5 rounded-key bg-phosphor" />
+            ON AIR · {station.zh}
+          </p>
+          <h1
+            id="ch00-title"
+            className="mt-[var(--spacing-stack-md)] font-display text-display"
+          >
+            CHANNEL 潘
+            <span className="mt-2 block text-h1 text-lemon">永不打烊的现场购物台</span>
+          </h1>
+          <p className="mt-[var(--spacing-stack-md)] max-w-[46ch] text-lede text-cream">
+            {station.line}
+          </p>
+          <p className="mt-[var(--spacing-stack-md)] max-w-[48ch] text-body text-muted">
+            {station.intro}
+          </p>
+
+          <dl className="mt-[var(--spacing-stack-lg)] grid gap-x-[var(--spacing-stack-lg)] gap-y-3 sm:grid-cols-2">
+            <div className="border-t-2 border-line pt-2">
+              <dt className="label text-muted">主持人 / 制作</dt>
+              <dd className="mt-1 font-display text-h3 text-cream">
+                {profile.nameZh}
+                <span className="ml-2 text-caption text-muted">{profile.nameLatin}</span>
+              </dd>
+            </div>
+            <div className="border-t-2 border-line pt-2">
+              <dt className="label text-muted">本台职责</dt>
+              <dd className="mt-1 text-body text-cream">{profile.role}</dd>
+            </div>
+            <div className="border-t-2 border-line pt-2">
+              <dt className="label text-muted">台训</dt>
+              <dd className="mt-1 text-body text-cream">{profile.tagline}</dd>
+            </div>
+            <div className="border-t-2 border-line pt-2">
+              <dt className="label text-muted">库存状态</dt>
+              <dd className="mt-1 flex items-center gap-2 text-body text-cream">
+                <span aria-hidden className="h-2.5 w-2.5 rounded-key border border-ink bg-phosphor" />
+                {profile.stock} · {profile.available}
+              </dd>
+            </div>
+          </dl>
+        </div>
+
+        {/* 今日在售目录 */}
+        <div className="min-w-0">
+          <div className="border-2 border-line bg-ink-soft">
+            <div className="flex items-center justify-between gap-3 border-b-2 border-line px-[var(--spacing-stack-md)] py-3">
+              <span className="label text-cream">今日在售 · 三档节目</span>
+              <span className="label text-muted">ON SALE NOW</span>
+            </div>
+            <ul>
+              {programs.map((program) => (
+                <li key={program.id} className="border-b border-line last:border-b-0">
+                  <a
+                    href={`#${program.id}`}
+                    onClick={(event) => {
+                      event.preventDefault();
+                      onJump(program.key);
+                    }}
+                    className="group flex min-h-[64px] items-center gap-4 px-[var(--spacing-stack-md)] py-3"
+                  >
+                    <span
+                      aria-hidden
+                      className={`grid h-12 w-16 shrink-0 place-items-center ${program.solid} font-display text-[1.05rem] text-ink`}
+                    >
+                      {program.channel}
+                    </span>
+                    <span className="min-w-0 flex-1">
+                      <span className="block truncate text-body text-cream group-hover:text-lemon">
+                        {program.title}
+                      </span>
+                      <span className="label mt-1 block text-muted">
+                        {program.category}
+                      </span>
+                    </span>
+                    <span className="shrink-0 text-right">
+                      <span className="block font-display text-h3 tabular-nums text-lemon">
+                        {program.price}
+                      </span>
+                      <span className="label block text-muted">成交记录</span>
+                    </span>
+                    <ArrowRightIcon size={20} className="shrink-0 text-cream" />
+                  </a>
+                </li>
+              ))}
+            </ul>
+            <p className="label px-[var(--spacing-stack-md)] py-3 text-muted">
+              遥控器数字键 1 / 2 / 3 可直接换台
+            </p>
           </div>
-          <dl className="mt-[var(--spacing-stack-lg)] flex flex-wrap gap-x-[var(--spacing-stack-lg)] gap-y-[var(--spacing-stack-md)]">
-            {cantoneseProject.stats.map((stat) => (
+
+          <div className="mt-[var(--spacing-stack-md)] flex items-start gap-3 border-2 border-lemon p-[var(--spacing-stack-md)]">
+            <SealIcon size={26} className="mt-0.5 shrink-0 text-lemon" />
+            <p className="text-body text-cream">
+              {station.notice}
+              <span className="mt-1 block text-caption text-muted">
+                数值出处：本人交付记录与项目现场原件，可逐条回播核对。
+              </span>
+            </p>
+          </div>
+
+          <div className="mt-[var(--spacing-stack-md)] grid grid-cols-2 gap-[var(--spacing-stack-md)]">
+            <a
+              href="#order"
+              onClick={(event) => {
+                event.preventDefault();
+                const target = document.getElementById('order');
+                if (target) scrollToElement(target);
+              }}
+              className="flex min-h-[64px] flex-col justify-center gap-1 bg-lemon px-5 text-ink"
+            >
+              <span className="label">限时下单 · 本台不收定金</span>
+              <span className="flex items-center gap-2 whitespace-nowrap font-display text-h3">
+                现在买
+                <ArrowRightIcon size={20} />
+              </span>
+            </a>
+            <div className="flex min-h-[64px] items-center gap-3 border-2 border-line bg-ink-soft px-5">
+              <TagIcon size={22} className="shrink-0 text-cream" />
+              <span className="label text-muted">
+                3 档节目 · 527 个项目累计成交
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/** 底部信息字幕条：真实履历事实走带。 */
+export function Teleticker() {
+  const reduced = useReducedMotion() ?? false;
+  const line = tickerFacts.join(' · ');
+
+  return (
+    <div
+      aria-label="本台实录字幕：真实履历事实"
+      className={`fixed inset-x-0 bottom-0 z-30 flex h-[var(--spacing-ticker)] items-center gap-3 border-t-2 border-line bg-ink-soft pl-3 ${
+        reduced ? 'overflow-x-auto' : 'overflow-hidden'
+      }`}
+    >
+      <span className="label flex shrink-0 items-center gap-2 text-phosphor">
+        <span aria-hidden className="h-2 w-2 rounded-key bg-phosphor" />
+        字幕
+      </span>
+      {reduced ? (
+        <p className="label shrink-0 whitespace-nowrap pr-3 text-cream">{line}</p>
+      ) : (
+        <div className="relative min-w-0 flex-1 overflow-hidden">
+          <div className="ticker-track">
+            <span className="label whitespace-nowrap pr-16 text-cream">{line}</span>
+            <span aria-hidden className="label whitespace-nowrap pr-16 text-cream">
+              {line}
+            </span>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/** 姊妹栏目 + 观众热线 */
+export function HotlineSection() {
+  return (
+    <section
+      id="hotline"
+      aria-labelledby="hotline-title"
+      className="border-t-2 border-line"
+    >
+      <div className="mx-auto grid w-full max-w-[1100px] gap-x-[var(--spacing-stack-lg)] gap-y-[var(--spacing-stack-lg)] px-[var(--spacing-gutter)] py-[var(--spacing-page-y)] lg:grid-cols-[1.02fr_0.98fr]">
+        <div className="min-w-0">
+          <p className="label text-cyanbar">{sisterShow.tag}</p>
+          <h2 id="hotline-title" className="mt-2 font-display text-h1 text-cream">
+            {sisterShow.name}
+          </h2>
+          <p className="mt-[var(--spacing-stack-md)] max-w-[46ch] text-lede text-muted">
+            {sisterShow.summary}
+          </p>
+          <dl className="mt-[var(--spacing-stack-md)] flex flex-wrap gap-x-[var(--spacing-stack-lg)] gap-y-3">
+            {sisterShow.stats.map((stat) => (
               <div key={stat.label}>
-                <dt className="label-mono text-muted">{stat.label}</dt>
-                <dd className="mt-1 font-mono text-h3 tabular-nums text-cream">{stat.value}</dd>
+                <dt className="label text-muted">{stat.label}</dt>
+                <dd className="mt-1 font-display text-h3 tabular-nums text-cream">{stat.value}</dd>
               </div>
             ))}
           </dl>
           <a
-            href={cantoneseProject.url}
+            href={sisterShow.url}
             target="_blank"
             rel="noreferrer"
-            className="mt-[var(--spacing-stack-lg)] inline-flex min-h-[48px] items-center gap-3 border border-line-strong px-6 text-cream transition-colors duration-200 hover:border-verdigris hover:text-verdigris active:scale-[0.98]"
+            className="label mt-[var(--spacing-stack-lg)] inline-flex min-h-12 items-center gap-3 border-2 border-line-strong px-6 text-cream transition-colors duration-200 hover:border-cyanbar hover:text-cyanbar"
           >
-            <span className="label-mono">打开 hk.datatrade.top</span>
-            <span aria-hidden>↗</span>
+            打开姊妹栏目 hk.datatrade.top
+            <ExternalIcon size={18} />
           </a>
-        </div>
-        <div className="grid grid-cols-2 gap-4 self-start lg:col-start-1 lg:row-start-1">
-          {SHOTS.slice(3).map((shot) => (
-            <img
-              key={shot.src}
-              src={shot.src}
-              alt={shot.alt}
-              loading="lazy"
-              decoding="async"
-              className="aspect-4/5 w-full object-cover"
-            />
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
 
-function ProjectCard({ project, index, total }: { project: Project; index: number; total: number }) {
-  const ref = useRef<HTMLDivElement>(null);
-  const reduced = useReducedMotion() ?? false;
-  const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'end start'] });
-  const targetScale = 1 - (total - 1 - index) * 0.03;
-  const squeezed = useTransform(scrollYProgress, [0, 1], [1, targetScale]);
-  const scale = reduced ? 1 : squeezed;
-  const hasVideo = useMedia(project.hoverVideo);
-  const video = useRef<HTMLVideoElement>(null);
-
-  const play = () => {
-    if (!hasVideo) return;
-    void video.current?.play().catch(() => undefined);
-  };
-  const stop = () => {
-    if (!video.current) return;
-    video.current.pause();
-    video.current.currentTime = 0;
-  };
-
-  return (
-    <div
-      ref={ref}
-      className="sticky flex min-h-[86vh] items-start pt-[var(--spacing-stack-lg)]"
-      style={{ top: `${96 + index * 28}px` }}
-    >
-      <motion.article
-        style={{ scale }}
-        onMouseEnter={play}
-        onMouseLeave={stop}
-        onFocus={play}
-        onBlur={stop}
-        className="grain w-full border border-line bg-surface p-[clamp(1.25rem,3vw,2.75rem)] will-change-transform"
-      >
-        <header className="flex flex-wrap items-end justify-between gap-[var(--spacing-stack-md)] border-b border-line pb-[var(--spacing-stack-md)]">
-          <div className="flex items-end gap-6">
-            <span className="font-mono text-h1 tabular-nums text-muted">{project.index}</span>
-            <div>
-              <p className="label-mono text-muted">{project.category}</p>
-              <h3 className="mt-2 font-display text-h2">{project.name}</h3>
-            </div>
+          <div className="mt-[var(--spacing-stack-lg)] grid grid-cols-2 gap-3">
+            {bRoll.map((shot) => (
+              <figure key={shot.src} className="border-2 border-line">
+                <img
+                  src={shot.src}
+                  alt={shot.alt}
+                  loading="lazy"
+                  decoding="async"
+                  className="aspect-4/5 w-full object-cover"
+                />
+                <figcaption className="label bg-ink-soft px-2 py-1 text-muted">本台外拍</figcaption>
+              </figure>
+            ))}
           </div>
-          <a
-            href={project.url}
-            target="_blank"
-            rel="noreferrer"
-            className="inline-flex min-h-[44px] items-center gap-2 border border-line-strong px-5 text-caption uppercase tracking-[0.14em] text-cream transition-colors duration-200 hover:border-brass hover:text-brass active:scale-[0.98]"
-          >
-            打开项目现场 <span aria-hidden>↗</span>
-          </a>
-        </header>
+        </div>
 
-        <p className="mt-[var(--spacing-stack-md)] max-w-[52ch] text-body text-muted">{project.summary}</p>
-        <ul className="mt-[var(--spacing-stack-md)] grid gap-2 text-body text-cream/90 md:grid-cols-3">
-          {project.bullets.map((bullet) => (
-            <li key={bullet} className="border-l border-line pl-4">
-              {bullet}
-            </li>
-          ))}
-        </ul>
-
-        <figure className="relative mt-[var(--spacing-stack-lg)] overflow-hidden">
-          <img
-            src={project.image}
-            alt={`${project.name} 现场`}
-            loading="lazy"
-            decoding="async"
-            className="aspect-16/9 w-full object-cover transition-transform duration-500 ease-out hover:scale-[1.02]"
-          />
-          {hasVideo ? (
-            <video
-              ref={video}
-              src={project.hoverVideo}
-              muted
-              loop
-              playsInline
-              className="absolute inset-0 h-full w-full object-cover"
-            />
-          ) : null}
-          <figcaption className="label-mono absolute bottom-4 left-4 bg-ink/80 px-3 py-1 text-cream">
-            {project.metric}
-          </figcaption>
-        </figure>
-      </motion.article>
-    </div>
-  );
-}
-
-export function ProjectsSection() {
-  return (
-    <section id="work" className="px-[var(--spacing-section-x)] py-section-y">
-      <p className="label-mono text-muted">Selected work · 2019—2025</p>
-      <h2 className="mt-[var(--spacing-stack-sm)] max-w-[18ch] font-display text-h1">
-        三次把 <span className="italic text-brass">不可复制</span> 的现场，交付成标准件
-      </h2>
-      <div className="mt-[var(--spacing-stack-xl)]">
-        {projects.map((project, index) => (
-          <ProjectCard key={project.index} project={project} index={index} total={projects.length} />
-        ))}
+        <div className="min-w-0">
+          <div className="flex items-center gap-3 border-b-2 border-line pb-3">
+            <PhoneRingIcon size={24} className="text-vermilion" />
+            <h3 className="font-display text-h2 text-cream">观众热线</h3>
+            <span className="label ml-auto text-muted">三条线同时接</span>
+          </div>
+          <ul className="mt-[var(--spacing-stack-md)] grid gap-3">
+            {socials.map((social) => (
+              <li key={social.name}>
+                <a
+                  href={social.url}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="flex min-h-[76px] items-center gap-4 border-2 border-line bg-ink-soft p-3 transition-colors duration-200 hover:border-cream"
+                >
+                  <span aria-hidden className="shrink-0 bg-cream p-1.5">
+                    <QRCodeSVG value={social.url} size={60} bgColor="#f2e9dc" fgColor="#141210" level="M" />
+                  </span>
+                  <span className="min-w-0 flex-1">
+                    <span className="label block text-cream">扫码 · {social.name}</span>
+                    <span className="mt-1 block text-body text-muted">{social.note}</span>
+                  </span>
+                  <ExternalIcon size={18} className="shrink-0 text-cream" />
+                </a>
+              </li>
+            ))}
+          </ul>
+          <p className="label mt-3 text-muted">
+            二维码由本页实时生成，指向本人公开主页。
+          </p>
+        </div>
       </div>
     </section>
   );
 }
 
-export function SocialRail() {
-  return (
-    <section aria-label="社媒矩阵" className="border-t border-line px-[var(--spacing-section-x)] py-[var(--spacing-stack-xl)]">
-      <div className="grid gap-[var(--spacing-stack-lg)] md:grid-cols-3">
-        {socials.map((social) => (
-          <a
-            key={social.name}
-            href={social.url}
-            target="_blank"
-            rel="noreferrer"
-            className="group flex items-center gap-5 border border-line bg-surface p-5 transition-colors duration-200 hover:border-brass focus-visible:border-brass"
-          >
-            <span className="bg-cream p-2">
-              <QRCodeSVG value={social.url} size={72} bgColor="#ffffff" fgColor="#0b0a09" level="M" />
-            </span>
-            <span>
-              <span className="label-mono block text-cream">{social.name}</span>
-              <span className="mt-1 block text-caption text-muted">{social.note}</span>
-            </span>
-          </a>
-        ))}
-      </div>
-    </section>
-  );
-}
-
-export function SiteFooter() {
-  const reduced = useReducedMotion();
-  const footRef = useRef<HTMLElement>(null);
-  const [near, setNear] = useState(false);
-  const hasReverse = useMedia('/media/footer-reverse.mp4');
-
-  useEffect(() => {
-    const el = footRef.current;
-    if (!el) return;
-    const io = new IntersectionObserver(
-      ([entry]) => entry.isIntersecting && setNear(true),
-      { rootMargin: '300px' },
-    );
-    io.observe(el);
-    return () => io.disconnect();
-  }, []);
-
-  const showReverse = hasReverse && near && !reduced;
+/** 限时下单：mailto CTA + 简历下载 + 400 式来电条 + 库存状态 */
+export function OrderSection() {
+  const mailto = `mailto:${profile.email}?subject=${encodeURIComponent(
+    '【CHANNEL 潘 下单】现场 / 直播 / 增长项目合作',
+  )}&body=${encodeURIComponent(
+    '潘宇龙您好：\n\n我想就本台节目下单，项目信息如下：\n\n场景：\n时间：\n预算：\n联系方式：',
+  )}`;
 
   return (
-    <footer
-      id="contact"
-      ref={footRef}
-      className="grain relative overflow-hidden border-t border-line bg-ink px-[var(--spacing-section-x)] py-section-y"
-    >
-      {showReverse ? (
-        <video
-          aria-hidden
-          tabIndex={-1}
-          src="/media/footer-reverse.mp4"
-          autoPlay
-          muted
-          loop
-          playsInline
-          preload="auto"
-          className="pointer-events-none absolute inset-0 h-full w-full object-cover opacity-[0.14]"
-        />
-      ) : null}
-      {showReverse ? <div aria-hidden className="absolute inset-0 bg-ink/80" /> : null}
-      <div className="relative grid gap-[var(--spacing-stack-xl)] lg:grid-cols-[1.2fr_0.8fr]">
-        <div>
-          <p className="label-mono text-muted">Contact</p>
-          <h2 className="mt-[var(--spacing-stack-sm)] max-w-[16ch] text-balance font-display text-h1">
-            下一场现场，交给你<span className="text-brass">。</span>
+    <section id="order" aria-labelledby="order-title" className="border-t-2 border-line">
+      <div className="mx-auto grid w-full max-w-[1100px] gap-x-[var(--spacing-stack-xl)] gap-y-[var(--spacing-stack-lg)] px-[var(--spacing-gutter)] py-[var(--spacing-page-y)] lg:grid-cols-[1.1fr_0.9fr]">
+        <div className="min-w-0">
+          <p className="label text-vermilion">限时下单 · 本台不收定金</p>
+          <h2 id="order-title" className="mt-2 max-w-[20ch] font-display text-h1 text-cream">
+            下一档节目，
+            <br />
+            由您点单
           </h2>
+          <p className="mt-[var(--spacing-stack-md)] max-w-[44ch] text-lede text-muted">
+            打通热线即发信：邮件里写清场景与档期，本台 24 小时内回播。所有在售参数均可核对原件。
+          </p>
+
           <div className="mt-[var(--spacing-stack-lg)] flex flex-wrap items-center gap-[var(--spacing-stack-md)]">
             <a
-              href={`mailto:${profile.email}`}
-              className="inline-flex min-h-[48px] items-center bg-cream px-7 text-ink transition-colors duration-200 hover:bg-brass active:scale-[0.98]"
+              href={mailto}
+              className="inline-flex min-h-14 items-center gap-4 bg-lemon px-7 text-ink transition-transform duration-200 hover:-translate-y-0.5 active:translate-y-0"
             >
-              <span className="label-mono">{profile.email}</span>
+              <EnvelopeIcon size={24} />
+              <span className="font-display text-[clamp(1.05rem,2vw,1.4rem)]">现在下单 → 发信给潘宇龙</span>
             </a>
             <a
               href={profile.cvPath}
-              download="潘宇龙 · 简历.pdf"
-              className="label-mono inline-flex min-h-[48px] items-center border-b border-line-strong text-cream transition-colors duration-200 hover:border-brass hover:text-brass"
+              download={`${profile.nameZh}·简历.pdf`}
+              className="label inline-flex min-h-14 items-center gap-3 border-2 border-line-strong px-5 text-cream transition-colors duration-200 hover:border-cream"
             >
-              下载 PDF 简历 ↓
+              <DownloadIcon size={20} />
+              下载完整简历 PDF
             </a>
           </div>
         </div>
-        <ul className="grid gap-3 self-end">
-          {socials.map((social) => (
-            <li key={social.name} className="flex items-center justify-between border-t border-line pt-3">
-              <a
-                href={social.url}
-                target="_blank"
-                rel="noreferrer"
-                className="label-mono relative text-cream before:absolute before:-inset-y-2.5 before:-inset-x-1 before:content-[''] hover:text-brass"
-              >
-                {social.name}
-              </a>
-              <span aria-hidden className="text-muted">↗</span>
-            </li>
-          ))}
-          <li className="label-mono mt-4 text-muted">© 2026 {profile.nameLatin}</li>
-        </ul>
+
+        <div className="min-w-0">
+          {/* 400 式来电条：内容是本台真实邮箱 */}
+          <motion.div
+            initial={{ opacity: 0, y: 18 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.4 }}
+            transition={{ duration: 0.4, ease: 'easeOut' }}
+            className="relative border-2 border-line bg-ink-soft p-[var(--spacing-stack-md)]"
+          >
+            <div className="flex items-center gap-4">
+              <span aria-hidden className="relative grid h-12 w-12 shrink-0 place-items-center">
+                <span
+                  className="crt-ring absolute inset-0 rounded-key border-2 border-vermilion"
+                  style={{ animation: 'ring 1.8s ease-out infinite' }}
+                />
+                <span
+                  className="crt-ring absolute inset-2 rounded-key border-2 border-vermilion/60"
+                  style={{ animation: 'ring 1.8s ease-out 0.45s infinite' }}
+                />
+                <PhoneRingIcon size={22} className="relative text-vermilion" />
+              </span>
+              <span className="min-w-0">
+                <span className="label block text-muted">观众来电 · 本台热线</span>
+                <a
+                  href={mailto}
+                  className="mt-1 block min-h-11 max-w-full break-all font-mono text-[clamp(0.95rem,3.4vw,1.25rem)] leading-snug tabular-nums text-cream hover:text-lemon"
+                >
+                  {profile.email}
+                </a>
+              </span>
+            </div>
+            <p className="label mt-3 text-muted">来电即转邮件 · 接通后由本人接听</p>
+
+            <dl className="mt-[var(--spacing-stack-md)] grid grid-cols-2 gap-3 border-t-2 border-line pt-3">
+              <div>
+                <dt className="label text-muted">库存状态</dt>
+                <dd className="mt-1 text-body text-cream">{profile.stock}</dd>
+              </div>
+              <div>
+                <dt className="label text-muted">可承接档期</dt>
+                <dd className="mt-1 text-body text-cream tabular-nums">{profile.available}</dd>
+              </div>
+              <div>
+                <dt className="label text-muted">累计成交</dt>
+                <dd className="mt-1 text-body text-cream tabular-nums">527 个项目</dd>
+              </div>
+              <div>
+                <dt className="label text-muted">播出保障</dt>
+                <dd className="mt-1 text-body text-cream">15 年 0 事故</dd>
+              </div>
+            </dl>
+          </motion.div>
+
+          <div className="mt-[var(--spacing-stack-md)] flex items-center gap-3 border-2 border-phosphor px-4 py-3">
+            <TvIcon size={22} className="shrink-0 text-phosphor" />
+            <p className="label text-phosphor">
+              ON AIR · 本台 24 小时播出，随时可插播您的项目
+            </p>
+          </div>
+        </div>
       </div>
-    </footer>
+      <BarsStrip height="h-6" />
+    </section>
   );
 }

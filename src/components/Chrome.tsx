@@ -1,182 +1,89 @@
-import { useEffect, useRef, useState, type ReactNode } from 'react';
-import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
-import { navLinks, profile } from '../data/site';
+import { useEffect, useRef } from 'react';
+import { navLinks, profile, station } from '../data/site';
+import { setActiveChannel } from '../state/tuner';
+import { scrollToTop } from '../state/scroll';
+import { AntennaIcon } from './icons';
 
-const BLOCKS = 5;
+/** 台标条：频道 ID + 导视锚点。换台时点亮当前频道（磷光绿 = 在架状态）。 */
+export function StationHeader({ active }: { active: string }) {
+  const navRef = useRef<HTMLElement>(null);
 
-export function Splash({ reducedMotion }: { reducedMotion: boolean }) {
-  const [hidden, setHidden] = useState(reducedMotion);
-
+  /* 窄屏导视条可横滑：换台后把「在架」那一项滚进可见区（只动这条，不动页面） */
   useEffect(() => {
-    if (reducedMotion) return;
-    const hide = window.setTimeout(() => setHidden(true), 1450);
-    return () => window.clearTimeout(hide);
-  }, [reducedMotion]);
-
-  if (hidden) return null;
+    const nav = navRef.current;
+    if (!nav) return;
+    nav.querySelector('[aria-current="true"]')?.scrollIntoView({ inline: 'nearest', block: 'nearest' });
+  }, [active]);
 
   return (
-    <div
-      className="pointer-events-none fixed inset-0 z-50 grid grid-rows-2 [perspective:900px]"
-      aria-hidden
-    >
-      {[0, 1].map((row) => (
-        <div key={row} className="grid grid-cols-5 overflow-hidden">
-          {Array.from({ length: BLOCKS }).map((_, col) => (
-            <motion.span
-              key={col}
-              className="bg-ink"
-              style={{ transformOrigin: row === 0 ? 'top' : 'bottom' }}
-              initial={{ rotateX: 0 }}
-              animate={{ rotateX: row === 0 ? -92 : 92 }}
-              transition={{
-                duration: 0.75,
-                delay: 0.72 + col * 0.05 + row * 0.03,
-                ease: [0.76, 0, 0.24, 1],
-              }}
-            />
-          ))}
-        </div>
-      ))}
-      <div className="absolute inset-0 grid place-items-center">
-        <span className="label-mono text-cream/70">
-          {profile.nameLatin.split('').map((ch, i) => (
-            <motion.span
-              key={i}
-              className="inline-block"
-              initial={{ opacity: 0, filter: 'blur(10px)' }}
-              animate={{ opacity: 1, filter: 'blur(0px)' }}
-              transition={{ duration: 0.4, delay: i * 0.045 }}
-            >
-              {ch}
-            </motion.span>
-          ))}
-        </span>
+    <header className="sticky top-0 z-30 border-b-2 border-line bg-ink/95">
+      <div className="mx-auto flex h-14 w-full max-w-[1100px] items-center gap-x-4 px-[var(--spacing-gutter)]">
+        <a
+          href="#ch00"
+          onClick={() => scrollToTop()}
+          className="flex min-h-11 shrink-0 items-center gap-2 text-cream"
+        >
+          <AntennaIcon size={22} className="text-lemon" />
+          <span className="font-display text-[1.15rem] leading-none tracking-tight">
+            {station.id}
+          </span>
+        </a>
+        <span className="label hidden text-muted md:inline">{station.zh}</span>
+        <nav
+          ref={navRef}
+          aria-label="节目导视"
+          className="no-bar ml-auto flex min-w-0 flex-1 flex-nowrap items-center gap-1 overflow-x-auto overscroll-x-contain pl-1 sm:flex-none sm:justify-end sm:pl-0"
+        >
+          {navLinks.map((link) => {
+            const onAir = active === link.id;
+            return (
+              <a
+                key={link.id}
+                href={`#${link.id}`}
+                aria-current={onAir ? 'true' : undefined}
+                onClick={() => setActiveChannel(link.id)}
+                className={`label inline-flex min-h-11 shrink-0 items-center whitespace-nowrap px-3 transition-colors duration-200 ${
+                  onAir ? 'bg-ink-soft text-phosphor' : 'text-muted hover:text-cream'
+                }`}
+              >
+                {onAir ? <span aria-hidden className="mr-2 h-2 w-2 rounded-key bg-phosphor" /> : null}
+                {link.label}
+              </a>
+            );
+          })}
+        </nav>
       </div>
-    </div>
-  );
-}
-
-export function NavBar() {
-  return (
-    <header className="fixed inset-x-0 top-0 z-40 flex items-center justify-between px-[var(--spacing-section-x)] py-6">
-      <a
-        href="#top"
-        className="label-mono relative text-cream before:absolute before:-inset-y-3 before:-inset-x-2 before:content-[''] hover:text-brass"
-      >
-        潘宇龙<span className="text-brass">*</span>
-      </a>
-      <nav aria-label="主导航" className="flex items-center gap-6">
-        {navLinks.map((link) => (
-          <a
-            key={link.id}
-            href={`#${link.id}`}
-            className="label-mono relative text-muted before:absolute before:-inset-y-3 before:-inset-x-2 before:content-[''] transition-colors duration-200 hover:text-cream"
-          >
-            {link.label}
-          </a>
-        ))}
-      </nav>
     </header>
   );
 }
 
-export function Magnetic({
-  children,
-  strength = 4,
-  padding = 120,
-}: {
-  children: ReactNode;
-  strength?: number;
-  padding?: number;
-}) {
-  const ref = useRef<HTMLSpanElement>(null);
-  const x = useMotionValue(0);
-  const y = useMotionValue(0);
-  const sx = useSpring(x, { stiffness: 320, damping: 22, mass: 0.6 });
-  const sy = useSpring(y, { stiffness: 320, damping: 22, mass: 0.6 });
-  const translate = useTransform([sx, sy], ([nx, ny]: number[]) => `translate3d(${nx}px,${ny}px,0)`);
-
+/** 遥控器与键盘共用：0-3 换台 / Esc 关机回测试卡 / 方向键由 VOL 旋钮承接。 */
+export function useTunerKeys(jump: (key: string) => void, onPower: () => void) {
   useEffect(() => {
-    const node = ref.current;
-    if (!node) return;
-    if (window.matchMedia('(pointer: coarse)').matches) return;
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const onKey = (event: KeyboardEvent) => {
+      const target = event.target as HTMLElement | null;
+      if (target && /^(INPUT|TEXTAREA|SELECT)$/.test(target.tagName)) return;
+      if (event.metaKey || event.ctrlKey || event.altKey) return;
 
-    const onMove = (event: PointerEvent) => {
-      const rect = node.getBoundingClientRect();
-      const dx = event.clientX - (rect.left + rect.width / 2);
-      const dy = event.clientY - (rect.top + rect.height / 2);
-      const inside =
-        Math.abs(dx) < rect.width / 2 + padding && Math.abs(dy) < rect.height / 2 + padding;
-      x.set(inside ? dx / strength : 0);
-      y.set(inside ? dy / strength : 0);
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        onPower();
+        return;
+      }
+      if (['0', '1', '2', '3'].includes(event.key)) {
+        event.preventDefault();
+        jump(event.key);
+      }
     };
-    window.addEventListener('pointermove', onMove);
-    return () => window.removeEventListener('pointermove', onMove);
-  }, [padding, strength, x, y]);
-
-  return (
-    <motion.span ref={ref} style={{ x: translate }} className="inline-block will-change-transform">
-      {children}
-    </motion.span>
-  );
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [jump, onPower]);
 }
 
-export function HeroCopy() {
+export function StationFooter() {
   return (
-    <section
-      id="top"
-      className="relative isolate flex min-h-[100svh] flex-col justify-end px-[var(--spacing-section-x)] pb-[var(--spacing-stack-xl)] pt-32"
-    >
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-36 bg-gradient-to-b from-ink via-ink/85 to-transparent"
-      />
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-y-0 left-0 -z-10 hidden h-full w-[64%] bg-gradient-to-r from-ink via-ink/80 to-transparent lg:block"
-      />
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0 -z-10 bg-ink/55 lg:hidden"
-      />
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-[62%] bg-gradient-to-t from-bg via-bg/85 to-transparent lg:hidden"
-      />
-      <p className="label-mono text-muted">
-        {profile.nameZh} · {profile.role}
-      </p>
-      <h1 className="mt-[var(--spacing-stack-md)] max-w-[14ch] font-display text-display">
-        把现场
-        <br />
-        <span className="italic text-brass">做成</span>系统
-      </h1>
-      <p className="mt-[var(--spacing-stack-md)] max-w-[46ch] text-lede text-muted">
-        12,000 人同时在线的技术直播、980M 曝光的保时捷沉浸展、一个人写完的粤语 App——用的是同一套工程习惯。
-      </p>
-      <div className="mt-[var(--spacing-stack-lg)] flex flex-wrap items-center gap-[var(--spacing-stack-md)]">
-        <Magnetic>
-          <a
-            href={`mailto:${profile.email}`}
-            className="inline-flex min-h-[48px] items-center gap-3 bg-cream px-7 py-3 text-ink transition-colors duration-200 hover:bg-brass focus-visible:outline-offset-4 active:scale-[0.98]"
-          >
-            <span className="label-mono">给潘宇龙写封邮件</span>
-            <span aria-hidden>→</span>
-          </a>
-        </Magnetic>
-        <a
-          href="#work"
-          className="label-mono inline-flex min-h-[44px] items-center text-cream underline decoration-line-strong underline-offset-8 transition-colors duration-200 hover:text-brass"
-        >
-          看三个落地项目
-        </a>
-      </div>
-      <p className="mt-[var(--spacing-stack-lg)] flex items-center gap-3 text-caption text-muted">
-        <span className="h-2 w-2 rounded-full bg-verdigris" aria-hidden />
-        {profile.available}
-      </p>
-    </section>
+    <p className="label border-t-2 border-line px-[var(--spacing-gutter)] py-4 text-muted">
+      © 2026 {profile.nameLatin} · {station.id} 试播台标 · 本页全部数值取自本人真实交付记录
+    </p>
   );
 }

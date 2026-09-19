@@ -1,47 +1,121 @@
 @import 'tailwindcss';
 
+/* ============================================================
+   CHANNEL 潘 · 午夜购物频道 —— 设计 token 单一源
+   register: narrative-driven / raw-CRT / 高饱和实色块
+   ============================================================ */
 @theme {
-  --color-ink: #0b0a09;
-  --color-bg: #121110;
-  --color-surface: #1a1817;
-  --color-line: rgba(242, 239, 230, 0.12);
-  --color-line-strong: rgba(242, 239, 230, 0.28);
-  --color-cream: #f2efe6;
-  --color-muted: #a29a8d;
-  --color-brass: #c08a3e;
-  --color-verdigris: #5e8c7f;
+  /* 底色：暖墨黑（禁紫调）。屏幕黑只允许出现在电视机屏幕内部。 */
+  --color-ink: #141210;
+  --color-ink-soft: #1d1a16;
+  --color-screen: #0b0c0a;
+  --color-screen-dim: #16180f;
 
-  --font-display: 'Instrument Serif', 'PingFang SC', 'Hiragino Sans', serif;
-  --font-sans: 'Archivo', 'PingFang SC', 'Hiragino Sans', 'Microsoft YaHei', sans-serif;
-  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+  /* SMPTE 实色块（一律纯色，禁渐变） */
+  --color-vermilion: #e2472e;
+  --color-lemon: #f2c230;
+  --color-phosphor: #38b45c;
+  --color-cyanbar: #2e9aa6;
+  --color-cream: #f2e9dc;
 
-  --text-display: clamp(3.5rem, 11vw, 9rem);
-  --text-display--line-height: 0.92;
-  --text-display--letter-spacing: -0.02em;
-  --text-h1: clamp(2.25rem, 5vw, 4rem);
-  --text-h1--line-height: 1.04;
-  --text-h1--letter-spacing: -0.015em;
-  --text-h2: clamp(1.6rem, 3vw, 2.4rem);
+  --color-muted: #b9ad9b;
+  --color-line: #3a342c;
+  --color-line-strong: #6b6153;
+
+  /* Latin: Bungee（台标 / 频道号 / 价格签）· IBM Plex Mono（正文与数据）
+     CJK: emfont CDN jf open 粉圆 → 静默回退 PingFang SC / Hiragino Sans GB */
+  --font-display: 'Bungee', 'jfOpenHuninn', 'PingFang SC', 'Hiragino Sans GB', sans-serif;
+  --font-mono: 'IBM Plex Mono', 'jfOpenHuninn', 'PingFang SC', 'Hiragino Sans GB', ui-monospace,
+    monospace;
+
+  --text-display: clamp(2.5rem, 7.2vw, 5.75rem);
+  --text-display--line-height: 0.94;
+  --text-display--letter-spacing: 0.01em;
+  --text-h1: clamp(1.9rem, 4.2vw, 3.25rem);
+  --text-h1--line-height: 1.02;
+  --text-h2: clamp(1.35rem, 2.4vw, 2rem);
   --text-h2--line-height: 1.15;
-  --text-h3: 1.35rem;
-  --text-h3--line-height: 1.35;
-  --text-lede: clamp(1.05rem, 1.5vw, 1.25rem);
+  --text-h3: 1.25rem;
+  --text-h3--line-height: 1.3;
+  --text-price: clamp(2.75rem, 6.5vw, 5rem);
+  --text-price--line-height: 0.9;
+  --text-key: 1.125rem;
+  --text-key--line-height: 1;
+  --text-lede: clamp(1rem, 1.2vw, 1.15rem);
   --text-lede--line-height: 1.6;
-  --text-body: 1rem;
-  --text-body--line-height: 1.65;
-  --text-caption: 0.8125rem;
+  --text-body: 0.95rem;
+  --text-body--line-height: 1.7;
+  --text-caption: 0.875rem; /* 全站最小 14px，禁低于此 */
   --text-caption--line-height: 1.5;
-  --text-caption--letter-spacing: 0.14em;
+  --text-caption--letter-spacing: 0.12em;
 
-  --spacing-section-y: clamp(6rem, 14vh, 9rem);
-  --spacing-section-x: clamp(1.25rem, 5vw, 5rem);
-  --spacing-stack-sm: 0.75rem;
-  --spacing-stack-md: 1.5rem;
-  --spacing-stack-lg: 3rem;
-  --spacing-stack-xl: 5rem;
+  --spacing-gutter: clamp(1.1rem, 4vw, 3.5rem);
+  --spacing-page-y: clamp(3.5rem, 9vh, 6.5rem);
+  --spacing-stack-sm: 0.6rem;
+  --spacing-stack-md: 1.25rem;
+  --spacing-stack-lg: 2.5rem;
+  --spacing-stack-xl: 4.5rem;
+  --spacing-ticker: 2.25rem;
+  --spacing-remote: 5.5rem;
 
-  --radius-card: 0px;
-  --radius-frame: 2px;
+  /* 圆角：遥控器按键全圆 / 电视机外壳 32px / 其余一律直角 */
+  --radius-shell: 32px;
+  --radius-key: 9999px;
+  --radius-tight: 0px;
+
+  --animate-ticker: ticker 38s linear infinite;
+  --animate-scan: scan 7s linear infinite;
+  --animate-flicker: flicker 4.2s steps(3, end) infinite;
+  --animate-ring: ring 1.8s ease-out infinite;
+  --animate-hum: hum 2.6s ease-in-out infinite;
+}
+
+@keyframes ticker {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+@keyframes scan {
+  from {
+    transform: translate3d(0, -100%, 0);
+  }
+  to {
+    transform: translate3d(0, 100%, 0);
+  }
+}
+@keyframes flicker {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  48% {
+    opacity: 0.86;
+  }
+  52% {
+    opacity: 0.97;
+  }
+}
+@keyframes ring {
+  from {
+    opacity: 0.75;
+    transform: scale(0.6);
+  }
+  to {
+    opacity: 0;
+    transform: scale(1.5);
+  }
+}
+@keyframes hum {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.55;
+  }
 }
 
 @layer base {
@@ -52,51 +126,119 @@
 
   body {
     margin: 0;
-    background: var(--color-bg);
+    background: var(--color-ink);
     color: var(--color-cream);
-    font-family: var(--font-sans);
+    font-family: var(--font-mono);
     font-size: var(--text-body);
-    -webkit-font-smoothing: antialiased;
+    line-height: var(--text-body--line-height);
     overflow-x: clip;
+    -webkit-font-smoothing: antialiased;
+    padding-bottom: calc(var(--spacing-ticker) + var(--spacing-remote));
   }
 
   section[id],
   footer[id] {
-    scroll-margin-top: 6rem;
+    scroll-margin-top: 3.9rem;
   }
 
   ::selection {
-    background: var(--color-brass);
+    background: var(--color-lemon);
     color: var(--color-ink);
   }
 
   :focus-visible {
-    outline: 2px solid var(--color-brass);
-    outline-offset: 3px;
+    outline: 2px solid var(--color-cream);
+    outline-offset: 2px;
+  }
+
+  /* 实色块上的焦点环换成墨黑，保证可见 */
+  .on-solid :focus-visible {
+    outline: 2px solid var(--color-ink);
+    outline-offset: 2px;
+  }
+
+  button {
+    font: inherit;
   }
 }
 
-@utility label-mono {
+/* 全站统一的电传标签样式 */
+@utility label {
   font-family: var(--font-mono);
   font-size: var(--text-caption);
+  line-height: var(--text-caption--line-height);
   letter-spacing: var(--text-caption--letter-spacing);
   text-transform: uppercase;
 }
 
-@utility grain {
-  position: relative;
+/* 塑料外壳：直角 + 硬描边 + 偏移实色阴影（非玻璃、非发光） */
+@utility shell {
+  background: var(--color-ink-soft);
+  border: 2px solid var(--color-line);
+  box-shadow: 10px 10px 0 0 var(--color-ink);
+}
 
-  &::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    opacity: 0.045;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
-  }
+/* 屏幕底：唯一允许出现屏幕黑的位置 */
+@utility screen-face {
+  position: relative;
+  overflow: clip;
+  background: var(--color-screen);
+  border: 2px solid var(--color-line);
+}
+
+/* 扫描线 + 雪花：纯 CSS 纹理，装饰层，永远 aria-hidden */
+@utility crt-lines {
+  pointer-events: none;
+  background-image: repeating-linear-gradient(
+    to bottom,
+    rgba(11, 12, 10, 0) 0px,
+    rgba(11, 12, 10, 0) 2px,
+    rgba(11, 12, 10, 0.55) 3px,
+    rgba(11, 12, 10, 0.55) 4px
+  );
+}
+
+@utility crt-noise {
+  pointer-events: none;
+  opacity: 0.16;
+  mix-blend-mode: screen;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* 走带滚动条（reduced-motion 下静止） */
+.ticker-track {
+  display: flex;
+  width: max-content;
+  animation: var(--animate-ticker);
+  will-change: transform;
+}
+
+/* 窄屏导视条：可横滑但不显示滚动条 */
+.no-bar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.no-bar::-webkit-scrollbar {
+  display: none;
+}
+
+html[data-motion='reduce'] .ticker-track {
+  animation: none;
+  width: 100%;
+}
+html[data-motion='reduce'] .crt-roll,
+html[data-motion='reduce'] .crt-flicker,
+html[data-motion='reduce'] .crt-ring {
+  display: none;
+}
+html[data-motion='reduce'] .crt-video {
+  filter: saturate(0.72) contrast(1.08);
 }
 
 @media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
   *,
   *::before,
   *::after {
