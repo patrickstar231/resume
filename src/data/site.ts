@@ -9,10 +9,10 @@ export const profile = {
 };
 
 export const navLinks = [
-  { id: 'work', label: 'Work' },
-  { id: 'about', label: 'About' },
-  { id: 'contact', label: 'Contact' },
-];
+  { id: 'station-1', label: '三座站台' },
+  { id: 'observation', label: '观景台' },
+  { id: 'terminus', label: '终点 · 名片' },
+] as const;
 
 export type Project = {
   index: string;
@@ -103,4 +103,84 @@ export const cantoneseProject = {
     { label: '跟读评分延迟', value: '140ms' },
     { label: '上线时间', value: '2025-11' },
   ],
+};
+
+/* ================== 过山车站点文案 ==================
+ * 每座站台 = site.ts 里的一个真实项目。以下数字全部可回溯，无虚构。
+ */
+
+export type Station = {
+  id: 'station-1' | 'station-2' | 'station-3';
+  /** 站厅名（站牌大字） */
+  hall: string;
+  /** 霓虹字牌上的指标——来自 projects[i].metric */
+  sign: string;
+  /** 下车游览 = 项目官网外链 */
+  alight: string;
+  /** 首末班时间牌 */
+  schedule: string;
+};
+
+export const stations: Station[] = [
+  {
+    id: 'station-1',
+    hall: 'PORSCHE · TIME TUNNEL',
+    sign: '980M+',
+    alight: '下车游览 · 保时捷新闻室',
+    schedule: '第一班 · 911 三年展期',
+  },
+  {
+    id: 'station-2',
+    hall: 'HUAWEI CLOUD · 快成长',
+    sign: '12,000',
+    alight: '下车游览 · 快成长直播页',
+    schedule: '第二班 · 50+ 场连续播出',
+  },
+  {
+    id: 'station-3',
+    hall: 'TENCENT · 生态大会',
+    sign: '2.3B+',
+    alight: '下车游览 · 腾讯数字生态',
+    schedule: '第三班 · 跨平台传播矩阵',
+  },
+];
+
+/** 观景台三块浮空数据碑。数字来源：
+ *  527 = 本人职业生涯承接项目总数（简历正文口径）；
+ *  0   = 重大事故数（华为云段：事故率从每 6 场 1 次降到 0）；
+ *  2.3B = 腾讯生态大会全网曝光（projects[2].metric）。 */
+export const tablets = [
+  { value: '527', unit: '个', label: 'PROJECTS DELIVERED', note: '职业生涯承接项目总数' },
+  { value: '0', unit: '次', label: 'MAJOR INCIDENTS', note: '直播播出事故：每 6 场 1 次 → 0' },
+  { value: '2.3B', unit: '', label: 'TOTAL IMPRESSIONS', note: '单个项目全网曝光峰值' },
+];
+
+/** 方法论段——观景台的正文，讲的是同一套工程习惯。 */
+export const methodology = [
+  {
+    title: '把现场当系统交付',
+    body: '21 条运营标准、可复用的渠道分发手册、政府级签约仪程 protocol 清单：一次性的东西被我改写成第二次不用想的东西。',
+  },
+  {
+    title: '零差错是设计约束，不是运气',
+    body: '彩排与推流清单化、批次放行动线化。排队流失率下降 41% 来自动线设计，不是来自人多。',
+  },
+  {
+    title: '前端能力服务于现场',
+    body: 'MR 导览、UGC 回流、跟读评分这些交互，都是我自己写的。这个站本身也是交付物之一。',
+  },
+];
+
+export const boarding = {
+  kicker: 'ADMIT ONE · 单程 · 三站',
+  title: '把职业轨迹',
+  titleAccent: '做成一条轨道',
+  lede:
+    '往下滚就是往前开。三座站台是三个真实项目，视频是站台的巨型 billboard，乘坐节奏就是这份简历的阅读顺序。',
+};
+
+export const terminus = {
+  kicker: 'TERMINUS',
+  title: '到站 · 交换名片',
+  body: '这一程到此。下一场现场，交给你——邮件、PDF 简历、三条社媒都在出口。',
 };

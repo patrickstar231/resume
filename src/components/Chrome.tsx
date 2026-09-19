@@ -1,182 +1,110 @@
-import { useEffect, useRef, useState, type ReactNode } from 'react';
-import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
+import { useSyncExternalStore } from 'react';
 import { navLinks, profile } from '../data/site';
+import {
+  SECTION_WINDOWS,
+  fastPassTo,
+  getActive,
+  sectionWindow,
+  subscribeActive,
+  type SectionId,
+} from '../state/coaster';
 
-const BLOCKS = 5;
-
-export function Splash({ reducedMotion }: { reducedMotion: boolean }) {
-  const [hidden, setHidden] = useState(reducedMotion);
-
-  useEffect(() => {
-    if (reducedMotion) return;
-    const hide = window.setTimeout(() => setHidden(true), 1450);
-    return () => window.clearTimeout(hide);
-  }, [reducedMotion]);
-
-  if (hidden) return null;
-
-  return (
-    <div
-      className="pointer-events-none fixed inset-0 z-50 grid grid-rows-2 [perspective:900px]"
-      aria-hidden
-    >
-      {[0, 1].map((row) => (
-        <div key={row} className="grid grid-cols-5 overflow-hidden">
-          {Array.from({ length: BLOCKS }).map((_, col) => (
-            <motion.span
-              key={col}
-              className="bg-ink"
-              style={{ transformOrigin: row === 0 ? 'top' : 'bottom' }}
-              initial={{ rotateX: 0 }}
-              animate={{ rotateX: row === 0 ? -92 : 92 }}
-              transition={{
-                duration: 0.75,
-                delay: 0.72 + col * 0.05 + row * 0.03,
-                ease: [0.76, 0, 0.24, 1],
-              }}
-            />
-          ))}
-        </div>
-      ))}
-      <div className="absolute inset-0 grid place-items-center">
-        <span className="label-mono text-cream/70">
-          {profile.nameLatin.split('').map((ch, i) => (
-            <motion.span
-              key={i}
-              className="inline-block"
-              initial={{ opacity: 0, filter: 'blur(10px)' }}
-              animate={{ opacity: 1, filter: 'blur(0px)' }}
-              transition={{ duration: 0.4, delay: i * 0.045 }}
-            >
-              {ch}
-            </motion.span>
-          ))}
-        </span>
-      </div>
-    </div>
-  );
+/** 离散「当前区间」：只在跨站时推一次更新，不跟帧。 */
+export function useActiveSection() {
+  return useSyncExternalStore(subscribeActive, getActive, () => 'boarding' as SectionId);
 }
 
-export function NavBar() {
+/**
+ * FAST PASS 导航：点击 = 程序化平滑滚动到对应站点区间中点。
+ * 保留真实 href —— 无 JS / reduced-motion 时退化为原生锚点，且不劫持 wheel。
+ */
+export function FastPassBar() {
+  const active = useActiveSection();
+
+  const go = (event: React.MouseEvent<HTMLAnchorElement>, id: SectionId) => {
+    event.preventDefault();
+    fastPassTo(id);
+  };
+
   return (
-    <header className="fixed inset-x-0 top-0 z-40 flex items-center justify-between px-[var(--spacing-section-x)] py-6">
-      <a
-        href="#top"
-        className="label-mono relative text-cream before:absolute before:-inset-y-3 before:-inset-x-2 before:content-[''] hover:text-brass"
-      >
-        潘宇龙<span className="text-brass">*</span>
-      </a>
-      <nav aria-label="主导航" className="flex items-center gap-6">
-        {navLinks.map((link) => (
-          <a
-            key={link.id}
-            href={`#${link.id}`}
-            className="label-mono relative text-muted before:absolute before:-inset-y-3 before:-inset-x-2 before:content-[''] transition-colors duration-200 hover:text-cream"
+    <header className="fixed inset-x-0 top-0 z-40">
+      <div className="flex items-stretch justify-between border-b-2 border-edge bg-night">
+        <a
+          href="#top"
+          onClick={(e) => go(e, 'boarding')}
+          className="flex min-h-[52px] items-center gap-3 border-r-2 border-edge px-[var(--spacing-rail-x)]"
+        >
+          <span
+            aria-hidden
+            className="grid h-7 w-7 shrink-0 place-items-center border-2 border-edge bg-candy font-slab text-[0.9rem] leading-none text-cream"
           >
-            {link.label}
-          </a>
-        ))}
-      </nav>
+            潘
+          </span>
+          <span className="label-caps truncate text-cream">
+            {profile.nameLatin}
+            <span className="text-candy" aria-hidden>
+              *
+            </span>
+          </span>
+        </a>
+
+        <nav aria-label="FAST PASS 快速乘车" className="flex items-stretch">
+          {navLinks.map((link) => {
+            const on = active === link.id;
+            return (
+              <a
+                key={link.id}
+                href={`#${link.id}`}
+                onClick={(e) => go(e, link.id)}
+                aria-current={on ? 'true' : undefined}
+                className={`label-caps relative flex min-h-[52px] items-center border-l-2 border-edge px-3 leading-none transition-colors duration-200 sm:px-5 ${
+                  on
+                    ? 'bg-candy text-cream'
+                    : 'bg-night text-cream/75 hover:bg-night-lift hover:text-cream'
+                }`}
+              >
+                {link.label}
+                {on ? (
+                  <span aria-hidden className="absolute inset-x-0 bottom-0 h-[3px] bg-brass" />
+                ) : null}
+              </a>
+            );
+          })}
+        </nav>
+      </div>
     </header>
   );
 }
 
-export function Magnetic({
-  children,
-  strength = 4,
-  padding = 120,
-}: {
-  children: ReactNode;
-  strength?: number;
-  padding?: number;
-}) {
-  const ref = useRef<HTMLSpanElement>(null);
-  const x = useMotionValue(0);
-  const y = useMotionValue(0);
-  const sx = useSpring(x, { stiffness: 320, damping: 22, mass: 0.6 });
-  const sy = useSpring(y, { stiffness: 320, damping: 22, mass: 0.6 });
-  const translate = useTransform([sx, sy], ([nx, ny]: number[]) => `translate3d(${nx}px,${ny}px,0)`);
-
-  useEffect(() => {
-    const node = ref.current;
-    if (!node) return;
-    if (window.matchMedia('(pointer: coarse)').matches) return;
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-
-    const onMove = (event: PointerEvent) => {
-      const rect = node.getBoundingClientRect();
-      const dx = event.clientX - (rect.left + rect.width / 2);
-      const dy = event.clientY - (rect.top + rect.height / 2);
-      const inside =
-        Math.abs(dx) < rect.width / 2 + padding && Math.abs(dy) < rect.height / 2 + padding;
-      x.set(inside ? dx / strength : 0);
-      y.set(inside ? dy / strength : 0);
-    };
-    window.addEventListener('pointermove', onMove);
-    return () => window.removeEventListener('pointermove', onMove);
-  }, [padding, strength, x, y]);
+/** 乘坐 HUD：已乘坐百分比 + 当前区间 + 下一站。读数全部来自真实区间。 */
+export function RideHud() {
+  const active = useActiveSection();
+  const idx = SECTION_WINDOWS.findIndex((w) => w.id === active);
+  const next = SECTION_WINDOWS[idx + 1];
+  const pct = Math.round(((idx + 1) / SECTION_WINDOWS.length) * 100);
 
   return (
-    <motion.span ref={ref} style={{ x: translate }} className="inline-block will-change-transform">
-      {children}
-    </motion.span>
-  );
-}
-
-export function HeroCopy() {
-  return (
-    <section
-      id="top"
-      className="relative isolate flex min-h-[100svh] flex-col justify-end px-[var(--spacing-section-x)] pb-[var(--spacing-stack-xl)] pt-32"
+    <div
+      aria-hidden
+      className="pointer-events-none fixed inset-x-0 bottom-0 z-30 border-t-2 border-edge bg-night"
     >
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-36 bg-gradient-to-b from-ink via-ink/85 to-transparent"
-      />
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-y-0 left-0 -z-10 hidden h-full w-[64%] bg-gradient-to-r from-ink via-ink/80 to-transparent lg:block"
-      />
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0 -z-10 bg-ink/55 lg:hidden"
-      />
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-[62%] bg-gradient-to-t from-bg via-bg/85 to-transparent lg:hidden"
-      />
-      <p className="label-mono text-muted">
-        {profile.nameZh} · {profile.role}
-      </p>
-      <h1 className="mt-[var(--spacing-stack-md)] max-w-[14ch] font-display text-display">
-        把现场
-        <br />
-        <span className="italic text-brass">做成</span>系统
-      </h1>
-      <p className="mt-[var(--spacing-stack-md)] max-w-[46ch] text-lede text-muted">
-        12,000 人同时在线的技术直播、980M 曝光的保时捷沉浸展、一个人写完的粤语 App——用的是同一套工程习惯。
-      </p>
-      <div className="mt-[var(--spacing-stack-lg)] flex flex-wrap items-center gap-[var(--spacing-stack-md)]">
-        <Magnetic>
-          <a
-            href={`mailto:${profile.email}`}
-            className="inline-flex min-h-[48px] items-center gap-3 bg-cream px-7 py-3 text-ink transition-colors duration-200 hover:bg-brass focus-visible:outline-offset-4 active:scale-[0.98]"
-          >
-            <span className="label-mono">给潘宇龙写封邮件</span>
-            <span aria-hidden>→</span>
-          </a>
-        </Magnetic>
-        <a
-          href="#work"
-          className="label-mono inline-flex min-h-[44px] items-center text-cream underline decoration-line-strong underline-offset-8 transition-colors duration-200 hover:text-brass"
-        >
-          看三个落地项目
-        </a>
+      <div className="flex items-stretch justify-between">
+        <div className="flex min-w-0 items-center gap-3 px-[var(--spacing-rail-x)] py-2.5">
+          <span className="h-3.5 w-3.5 shrink-0 border-2 border-edge bg-candy" />
+          <span className="label-caps truncate text-cream">{sectionWindow(active).label}</span>
+        </div>
+        <div className="flex items-center gap-3 border-l-2 border-edge px-3 sm:gap-4 sm:px-5">
+          <span className="label-caps hidden text-cream/70 lg:inline">
+            {next ? `NEXT · ${next.label}` : 'TERMINUS · 已到站'}
+          </span>
+          <span className="relative block h-3.5 w-[5.5rem] overflow-hidden border-2 border-edge bg-night sm:w-32">
+            <span className="absolute inset-y-0 left-0 bg-candy" style={{ width: `${pct}%` }} />
+          </span>
+          <span className="label-caps tabular-nums text-brass">
+            {String(pct).padStart(2, '0')}%
+          </span>
+        </div>
       </div>
-      <p className="mt-[var(--spacing-stack-lg)] flex items-center gap-3 text-caption text-muted">
-        <span className="h-2 w-2 rounded-full bg-verdigris" aria-hidden />
-        {profile.available}
-      </p>
-    </section>
+    </div>
   );
 }

@@ -1,99 +1,214 @@
+@import url('https://font.emtech.cc/css/ChironHeiHK.css');
 @import 'tailwindcss';
 
+/* ------------------------------------------------------------------
+   SCROLL COASTER · 过山车简历
+   Material metaphor: 游乐园白昼 + 漆面金属 + 票根纸
+   规则：一律纯色实块；立体感只靠硬边深色描边 + 平涂明暗两面。
+   禁：渐变 / glow / 玻璃 / 紫蓝粉青 / Noto Sans SC。
+------------------------------------------------------------------- */
+
 @theme {
-  --color-ink: #0b0a09;
-  --color-bg: #121110;
-  --color-surface: #1a1817;
-  --color-line: rgba(242, 239, 230, 0.12);
-  --color-line-strong: rgba(242, 239, 230, 0.28);
-  --color-cream: #f2efe6;
-  --color-muted: #a29a8d;
-  --color-brass: #c08a3e;
-  --color-verdigris: #5e8c7f;
+  /* 游乐园白昼系：夜空底为深松绿（禁紫调、禁纯黑） */
+  --color-night: #0f2018;
+  --color-night-lift: #16301f; /* 平涂亮面，非渐变 */
+  --color-edge: #0a1410; /* 硬边描边色，2px */
+  --color-candy: #d93a2b; /* 糖果苹果红：轨道 / 主 CTA */
+  --color-candy-shade: #a92a1f; /* 红色面的平涂暗面 */
+  --color-cream: #f4ebdd; /* 正文 / 票根纸 */
+  --color-cream-shade: #ded2c0; /* 纸面平涂暗面 */
+  --color-brass: #d9a441; /* 黄铜金：仅齿孔/编号，面积 ≤8% */
+  --color-ink: #0a1410; /* 票根上的正文色 */
+  --color-line: rgba(244, 235, 221, 0.22);
 
-  --font-display: 'Instrument Serif', 'PingFang SC', 'Hiragino Sans', serif;
-  --font-sans: 'Archivo', 'PingFang SC', 'Hiragino Sans', 'Microsoft YaHei', sans-serif;
-  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+  --font-slab: 'Alfa Slab One', 'ChironHeiHK', 'PingFang SC', 'Hiragino Sans', serif;
+  --font-body: 'Archivo', 'ChironHeiHK', 'PingFang SC', 'Hiragino Sans', 'Microsoft YaHei',
+    sans-serif;
+  --font-mono: 'Archivo', ui-monospace, monospace;
 
-  --text-display: clamp(3.5rem, 11vw, 9rem);
-  --text-display--line-height: 0.92;
-  --text-display--letter-spacing: -0.02em;
-  --text-h1: clamp(2.25rem, 5vw, 4rem);
-  --text-h1--line-height: 1.04;
-  --text-h1--letter-spacing: -0.015em;
-  --text-h2: clamp(1.6rem, 3vw, 2.4rem);
+  /* 站牌大字 = Weight 重；正文 ≥14px 硬底 */
+  --text-station: clamp(2.6rem, 8.4vw, 7rem);
+  --text-station--line-height: 0.9;
+  --text-station--letter-spacing: -0.01em;
+  --text-h1: clamp(1.9rem, 4.4vw, 3.25rem);
+  --text-h1--line-height: 1.05;
+  --text-h2: clamp(1.4rem, 2.6vw, 2.1rem);
   --text-h2--line-height: 1.15;
-  --text-h3: 1.35rem;
-  --text-h3--line-height: 1.35;
-  --text-lede: clamp(1.05rem, 1.5vw, 1.25rem);
-  --text-lede--line-height: 1.6;
+  --text-sign: clamp(1.9rem, 4.6vw, 3.4rem);
+  --text-sign--line-height: 1;
+  --text-lede: clamp(1rem, 1.35vw, 1.18rem);
+  --text-lede--line-height: 1.62;
   --text-body: 1rem;
   --text-body--line-height: 1.65;
-  --text-caption: 0.8125rem;
+  --text-caption: 0.875rem;
   --text-caption--line-height: 1.5;
-  --text-caption--letter-spacing: 0.14em;
+  --text-caption--letter-spacing: 0.12em;
 
-  --spacing-section-y: clamp(6rem, 14vh, 9rem);
-  --spacing-section-x: clamp(1.25rem, 5vw, 5rem);
+  --spacing-rail-x: clamp(1.15rem, 5vw, 4.5rem);
   --spacing-stack-sm: 0.75rem;
   --spacing-stack-md: 1.5rem;
   --spacing-stack-lg: 3rem;
   --spacing-stack-xl: 5rem;
 
-  --radius-card: 0px;
+  --radius-card: 0px; /* 硬边：不做圆角 */
   --radius-frame: 2px;
 }
 
 @layer base {
   html {
-    background: var(--color-ink);
+    background: var(--color-night);
     color-scheme: dark;
+    scroll-behavior: auto; /* Lenis 负责平滑，不用 CSS smooth 抢节奏 */
   }
 
   body {
     margin: 0;
-    background: var(--color-bg);
+    background: var(--color-night);
     color: var(--color-cream);
-    font-family: var(--font-sans);
+    font-family: var(--font-body);
     font-size: var(--text-body);
+    font-weight: 500;
     -webkit-font-smoothing: antialiased;
     overflow-x: clip;
-  }
-
-  section[id],
-  footer[id] {
-    scroll-margin-top: 6rem;
+    font-synthesis-style: none; /* 汉字不做伪斜体 */
   }
 
   ::selection {
-    background: var(--color-brass);
-    color: var(--color-ink);
+    background: var(--color-candy);
+    color: var(--color-cream);
+  }
+
+  /* 锚点跳转要给 52px 的 FAST PASS 栏让位 */
+  [id] {
+    scroll-margin-top: 4.5rem;
   }
 
   :focus-visible {
-    outline: 2px solid var(--color-brass);
+    outline: 2px solid var(--color-cream);
     outline-offset: 3px;
+  }
+
+  /* 黄铜描边版本给票根纸面内的焦点，保证 ≥3:1 对纸底 */
+  [data-surface='paper'] :focus-visible {
+    outline-color: var(--color-candy-shade);
   }
 }
 
-@utility label-mono {
-  font-family: var(--font-mono);
+/* ---------------- 排版原语 ---------------- */
+
+@utility label-caps {
+  font-family: var(--font-body);
   font-size: var(--text-caption);
+  font-weight: 700;
   letter-spacing: var(--text-caption--letter-spacing);
   text-transform: uppercase;
 }
 
-@utility grain {
-  position: relative;
+/* 漆面金属硬边：2px 深色描边 + 平涂明暗两面（无上模糊阴影） */
+@utility hard-edge {
+  border: 2px solid var(--color-edge);
+  box-shadow: 4px 4px 0 0 var(--color-edge);
+}
 
-  &::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    opacity: 0.045;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+@utility tablet-flat {
+  background: var(--color-night-lift);
+  border: 2px solid var(--color-edge);
+  box-shadow: inset 0 -6px 0 0 rgba(10, 20, 16, 0.55);
+}
+
+/* ---------------- 票根（齿孔用 CSS mask 实现） ---------------- */
+
+@utility ticket {
+  position: relative;
+  background: var(--color-cream);
+  color: var(--color-ink);
+  --notch-r: 7px;
+  --notch-pitch: 24px;
+  padding-block: 2px;
+}
+
+@utility ticket-perf {
+  mask-image:
+    radial-gradient(circle var(--notch-r) at 50% 0, #000 99%, transparent 100%),
+    radial-gradient(circle var(--notch-r) at 50% 100%, #000 99%, transparent 100%),
+    linear-gradient(#000, #000);
+  mask-position:
+    0 calc(var(--notch-r) * -1 + 1px),
+    0 calc(100% - var(--notch-r) * -1 - 1px),
+    0 0;
+  mask-size:
+    var(--notch-pitch) 100%,
+    var(--notch-pitch) 100%,
+    100% 100%;
+  mask-repeat: repeat-x, repeat-x, no-repeat;
+  mask-composite: subtract, subtract, add;
+  /* 注意：不要写 -webkit-mask-composite。它的旧语义（source-out…）会覆盖
+     标准的 subtract 合成，在 Blink 下把整个元素减空 → 票根消失。
+     旧版 Safari 缺省退化为直边票根，可接受。 */
+}
+
+/* 半调网点（平涂，不是渐变）：给 DOM 装饰面用 */
+@utility halftone {
+  background-image: radial-gradient(
+    circle at 1px 1px,
+    rgba(244, 235, 221, 0.16) 1px,
+    transparent 1.6px
+  );
+  background-size: 9px 9px;
+}
+
+@utility halftone-ink {
+  background-image: radial-gradient(
+    circle at 1px 1px,
+    rgba(10, 20, 16, 0.2) 1px,
+    transparent 1.6px
+  );
+  background-size: 8px 8px;
+}
+
+/* ---------------- 动效 ---------------- */
+
+/* 红色印章盖下：0.8s，落在最后一帧静止 */
+@keyframes stamp-in {
+  0% {
+    opacity: 0;
+    transform: scale(2.6) rotate(-26deg);
   }
+  55% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) rotate(-11deg);
+  }
+}
+
+@keyframes gate-left {
+  to {
+    transform: translateX(-102%);
+  }
+}
+
+@keyframes gate-right {
+  to {
+    transform: translateX(102%);
+  }
+}
+
+.animate-stamp {
+  animation: stamp-in 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.35s both;
+}
+
+.gate-leaf {
+  will-change: transform;
+}
+
+.gate-leaf--open-left {
+  animation: gate-left 0.85s cubic-bezier(0.76, 0, 0.24, 1) 1.35s both;
+}
+
+.gate-leaf--open-right {
+  animation: gate-right 0.85s cubic-bezier(0.76, 0, 0.24, 1) 1.35s both;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -103,5 +218,16 @@
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .animate-stamp {
+    animation: none;
+    opacity: 1;
+    transform: scale(1) rotate(-11deg);
+  }
+
+  .gate-leaf {
+    display: none;
   }
 }
