@@ -1,102 +1,231 @@
 @import 'tailwindcss';
 
+/* ─────────────────────────────────────────────────────────────
+   THE PRIZE MACHINE · 巨型扭蛋机
+   Material Metaphor = 注塑塑料 × 游戏厅灯箱
+   所有颜色 / 圆角 / 阴影 / 字阶的唯一来源。禁止在组件里写十六进制。
+   ───────────────────────────────────────────────────────────── */
 @theme {
-  --color-ink: #0b0a09;
-  --color-bg: #121110;
-  --color-surface: #1a1817;
-  --color-line: rgba(242, 239, 230, 0.12);
-  --color-line-strong: rgba(242, 239, 230, 0.28);
-  --color-cream: #f2efe6;
-  --color-muted: #a29a8d;
-  --color-brass: #c08a3e;
-  --color-verdigris: #5e8c7f;
+  /* 机壳与描线 */
+  --color-shell: #f6f1e7; /* 机壳奶白：页面主底 */
+  --color-plate: #fffcf3; /* 面板内衬：更亮一档的实体塑料白 */
+  --color-ink: #2b2320; /* 描线巧克力棕：所有 2px 硬描边与正文 */
 
-  --font-display: 'Instrument Serif', 'PingFang SC', 'Hiragino Sans', serif;
-  --font-sans: 'Archivo', 'PingFang SC', 'Hiragino Sans', 'Microsoft YaHei', sans-serif;
-  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+  /* 玩具三原色实块 */
+  --color-punch: #e23b2e; /* 大红：主 CTA / 投币 */
+  --color-capsule: #f5c518; /* 明黄：胶囊 / 强调标签（面积 ≤10%） */
+  --color-cobalt: #2456c7; /* 钴蓝：次级面板 / 链接 hover */
+  --color-liner: #1d2b36; /* 机舱内衬深蓝：仅机器玻璃后方 */
+  --color-gold: #c99320; /* 限定彩蛋实色金（哑光，非渐变） */
 
-  --text-display: clamp(3.5rem, 11vw, 9rem);
-  --text-display--line-height: 0.92;
-  --text-display--letter-spacing: -0.02em;
-  --text-h1: clamp(2.25rem, 5vw, 4rem);
-  --text-h1--line-height: 1.04;
-  --text-h1--letter-spacing: -0.015em;
-  --text-h2: clamp(1.6rem, 3vw, 2.4rem);
-  --text-h2--line-height: 1.15;
-  --text-h3: 1.35rem;
-  --text-h3--line-height: 1.35;
-  --text-lede: clamp(1.05rem, 1.5vw, 1.25rem);
-  --text-lede--line-height: 1.6;
+  /* 字体：Latin = Archivo Black / Work Sans；CJK = jfOpenHuninn（emfont CDN）→ PingFang SC */
+  --font-display: 'Archivo Black', 'jfOpenHuninn', 'PingFang SC', 'Hiragino Sans', sans-serif;
+  --font-sans: 'Work Sans', 'jfOpenHuninn', 'PingFang SC', 'Hiragino Sans', 'Microsoft YaHei',
+    sans-serif;
+
+  /* 字阶（正文最小 16px，机台标签最小 14px） */
+  --text-display: clamp(2.9rem, 8.4vw, 7.5rem);
+  --text-display--line-height: 0.9;
+  --text-display--letter-spacing: -0.01em;
+  --text-h1: clamp(2rem, 4.4vw, 3.5rem);
+  --text-h1--line-height: 1.02;
+  --text-h2: clamp(1.45rem, 2.6vw, 2.1rem);
+  --text-h2--line-height: 1.14;
+  --text-h3: 1.2rem;
+  --text-h3--line-height: 1.3;
+  --text-lede: clamp(1.05rem, 1.35vw, 1.3rem);
+  --text-lede--line-height: 1.62;
   --text-body: 1rem;
-  --text-body--line-height: 1.65;
-  --text-caption: 0.8125rem;
-  --text-caption--line-height: 1.5;
-  --text-caption--letter-spacing: 0.14em;
+  --text-body--line-height: 1.68;
+  --text-tag: 0.875rem;
+  --text-tag--line-height: 1.45;
+  --text-tag--letter-spacing: 0.05em;
+  --text-plate: 0.95rem;
+  --text-plate--letter-spacing: 0.12em;
 
-  --spacing-section-y: clamp(6rem, 14vh, 9rem);
-  --spacing-section-x: clamp(1.25rem, 5vw, 5rem);
-  --spacing-stack-sm: 0.75rem;
+  /* 间距 */
+  --spacing-section-y: clamp(4.5rem, 11vh, 8rem);
+  --spacing-section-x: clamp(1.1rem, 4.5vw, 4.5rem);
+  --spacing-stack-xs: 0.5rem;
+  --spacing-stack-sm: 0.85rem;
   --spacing-stack-md: 1.5rem;
-  --spacing-stack-lg: 3rem;
-  --spacing-stack-xl: 5rem;
+  --spacing-stack-lg: 2.75rem;
+  --spacing-stack-xl: 4.5rem;
+  --spacing-hit: 2.75rem; /* 44px 最小可交互高度 */
 
-  --radius-card: 0px;
-  --radius-frame: 2px;
+  /* 圆角：胶囊全圆 / 面板 16px / 抽屉拉手 0 */
+  --radius-capsule: 9999px;
+  --radius-panel: 16px;
+  --radius-handle: 0px;
+
+  /* 阴影＝注塑件的硬投影与 1px 上缘亮线，绝无模糊与光晕 */
+  --shadow-press: 5px 5px 0 0 var(--color-ink);
+  --shadow-press-sm: 3px 3px 0 0 var(--color-ink);
+  --shadow-mold: inset 0 1px 0 0 rgba(255, 255, 255, 0.72);
+  --shadow-plate: 0 0 0 2px var(--color-ink);
 }
 
 @layer base {
   html {
-    background: var(--color-ink);
-    color-scheme: dark;
+    background: var(--color-shell);
+    color-scheme: light;
   }
 
   body {
     margin: 0;
-    background: var(--color-bg);
-    color: var(--color-cream);
+    background: var(--color-shell);
+    color: var(--color-ink);
     font-family: var(--font-sans);
     font-size: var(--text-body);
+    font-weight: 450;
     -webkit-font-smoothing: antialiased;
     overflow-x: clip;
   }
 
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display);
+    font-weight: 400;
+  }
+
   section[id],
   footer[id] {
-    scroll-margin-top: 6rem;
+    scroll-margin-top: 5.5rem;
   }
 
   ::selection {
-    background: var(--color-brass);
+    background: var(--color-capsule);
     color: var(--color-ink);
   }
 
   :focus-visible {
-    outline: 2px solid var(--color-brass);
+    outline: 2px solid var(--color-ink);
     outline-offset: 3px;
+  }
+
+  /* 深色内衬上的焦点：仍是 2px 棕描线，外加一圈奶白衬垫保证可见 */
+  .on-liner :focus-visible {
+    outline: 2px solid var(--color-ink);
+    box-shadow: 0 0 0 4px var(--color-shell);
+  }
+
+  img,
+  video {
+    display: block;
+    max-width: 100%;
   }
 }
 
-@utility label-mono {
-  font-family: var(--font-mono);
-  font-size: var(--text-caption);
-  letter-spacing: var(--text-caption--letter-spacing);
+/* ── 机台零件级 utility ─────────────────────────────────────── */
+@utility stroked {
+  border: 2px solid var(--color-ink);
+}
+
+@utility panel {
+  background: var(--color-plate);
+  border: 2px solid var(--color-ink);
+  border-radius: var(--radius-panel);
+  box-shadow: var(--shadow-press);
+}
+
+@utility tag {
+  font-family: var(--font-sans);
+  font-weight: 650;
+  font-size: var(--text-tag);
+  line-height: var(--text-tag--line-height);
+  letter-spacing: var(--text-tag--letter-spacing);
+}
+
+@utility plate-label {
+  font-family: var(--font-sans);
+  font-weight: 700;
+  font-size: var(--text-plate);
+  letter-spacing: var(--text-plate--letter-spacing);
   text-transform: uppercase;
 }
 
-@utility grain {
-  position: relative;
+@utility numbers {
+  font-family: var(--font-display);
+  font-variant-numeric: tabular-nums;
+}
 
-  &::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    opacity: 0.045;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+/* 注塑高光：只允许 1px 上缘亮线 */
+@utility mold {
+  box-shadow: var(--shadow-mold);
+}
+
+/* 游戏厅灯箱的丝印点阵（实色圆点平铺，全站零渐变函数） */
+@utility dots {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10'%3E%3Ccircle cx='1.6' cy='1.6' r='1.1' fill='%232B2320'/%3E%3C/svg%3E");
+  background-size: 10px 10px;
+}
+
+/* ── 动效：胶囊弹开 / 灯箱跑马 / 投币 ───────────────────────── */
+@keyframes pm-marquee {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-50%, 0, 0);
   }
 }
 
+@keyframes pm-drop {
+  0% {
+    transform: translate3d(0, -220%, 0) rotate(-14deg);
+    opacity: 0;
+  }
+  60% {
+    transform: translate3d(0, 6%, 0) rotate(4deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translate3d(0, 0, 0) rotate(0deg);
+    opacity: 1;
+  }
+}
+
+@keyframes pm-coin {
+  0% {
+    transform: translate3d(0, 0, 0) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translate3d(0, 190px, 0) rotate(78deg);
+    opacity: 0;
+  }
+}
+
+@keyframes pm-blink {
+  0%,
+  72% {
+    opacity: 1;
+  }
+  73%,
+  100% {
+    opacity: 0.25;
+  }
+}
+
+.pm-marquee {
+  animation: pm-marquee 34s linear infinite;
+}
+.pm-drop {
+  animation: pm-drop 620ms cubic-bezier(0.22, 1.2, 0.36, 1) both;
+}
+.pm-coin {
+  animation: pm-coin 620ms cubic-bezier(0.5, 0, 0.9, 0.4) both;
+}
+.pm-blink {
+  animation: pm-blink 1.15s steps(1, end) infinite;
+}
+
 @media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
   *,
   *::before,
   *::after {
