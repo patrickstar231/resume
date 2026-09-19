@@ -8,7 +8,7 @@ export const profile = {
   nameLatin: 'PANYULONG',
   role: '活动 / 直播制作人 · 体验工程 · 增长技术',
   tagline: '把发布会、直播与增长链路做成可运行的系统。',
-  email: 'patrickstar231@gmail.com',
+  email: 'patrick_pan410@hotmail.com',
   cvPath: '/resume-panyulong.pdf',
   available: '2026 Q4 · 补货中',
 };
